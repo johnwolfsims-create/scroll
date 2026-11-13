@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="templar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0F0E0C">
+<title>Scroll</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" id="touch-icon" href="icons/icon-templar-180.png">
+<meta name="apple-mobile-web-app-title" content="Scroll">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F0E0C;--ink:#E8E0CC;--muted:#A39C8C;--dim:#8C8576;--faint:#6E685D;--line:#2A2722;--card:#16140F;--card2:#1B1914;
+  --accent:#D2643A;--accent-ink:#0F0E0C;--hi:#F2A24A;--bead:#D2643A;
+  --g1:rgba(210,100,58,.10);--g2:rgba(168,50,43,.08);--g3:rgba(232,120,50,.09);
+  --halo:rgba(242,162,74,.055);--orb1:rgba(242,162,74,.16);--orb2:rgba(210,100,58,.07);--spark:#F2A24A;--spark-glow:rgba(242,162,74,.55);
+}
+:root[data-theme="teutonic"]{
+  --bg:#0C0C0D;--ink:#ECECEE;--muted:#A2A4A9;--dim:#8A8C91;--faint:#66686C;--line:#2A2B2E;--card:#151618;--card2:#1A1B1D;
+  --accent:#C9CCD1;--accent-ink:#0C0C0D;--hi:#C8A951;--bead:#C8A951;
+  --g1:rgba(205,210,218,.06);--g2:rgba(200,169,81,.045);--g3:rgba(232,234,238,.055);
+  --halo:rgba(232,234,238,.05);--orb1:rgba(232,234,238,.12);--orb2:rgba(200,169,81,.05);--spark:#E6E8EB;--spark-glow:rgba(230,232,235,.5);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent}
+body{font-family:'EB Garamond',Georgia,serif;overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+a{color:var(--ink)}
+.cz{font-family:Cinzel,serif}
+#app{position:relative;max-width:480px;height:100dvh;margin:0 auto;overflow:hidden;background:var(--bg)}
+.ember{position:absolute;inset:-20%;pointer-events:none;z-index:0;background:radial-gradient(40% 30% at 30% 80%,var(--g1),transparent 70%),radial-gradient(35% 28% at 75% 25%,var(--g2),transparent 70%),radial-gradient(50% 35% at 50% 105%,var(--g3),transparent 70%);animation:emberDrift 15.86s ease-in-out infinite,emberBreathe 7.93s ease-in-out infinite}
+@keyframes emberDrift{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(4%,-5%) rotate(6deg)}}
+@keyframes emberBreathe{0%,100%{opacity:.55}50%{opacity:1}}
+.screen{position:absolute;inset:0;z-index:1;display:none;flex-direction:column;gap:16px;padding:calc(env(safe-area-inset-top) + 20px) 22px calc(env(safe-area-inset-bottom) + 22px);overflow-y:auto}
+.screen.on{display:flex;animation:fadeIn .45s ease-out}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.bar{display:flex;align-items:center;justify-content:space-between;min-height:44px}
+.bar3{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:44px}
+.bar3>:first-child{justify-self:start}
+.bar3>:last-child{justify-self:end}
+.virtus{font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:var(--dim)}
+.iconbtn{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:none;background:transparent;padding:0}
+.label{font-family:Cinzel,serif;font-size:12px;letter-spacing:3px;color:var(--muted)}
+.title-sm{font-family:Cinzel,serif;font-size:13px;letter-spacing:4px;color:var(--accent)}
+.card{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:4px;background:var(--card);text-align:left;width:100%;min-height:64px}
+.card .tag{font-family:Cinzel,serif;font-size:13px;letter-spacing:2px;width:66px;color:var(--accent);flex:none}
+.card .main{display:flex;flex-direction:column;flex:1;min-width:0}
+.card .main b{font-weight:400;font-size:18px}
+.card .main span{font-size:14px;color:var(--muted)}
+.card .end{font-family:Cinzel,serif;font-size:13px;color:var(--muted)}
+.card.kept{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.btn{height:52px;border-radius:4px;border:none;background:var(--accent);color:var(--accent-ink);font-family:Cinzel,serif;font-weight:600;font-size:14px;letter-spacing:3px;width:100%}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.rule{border-top:1px solid var(--line)}
+.motto{text-align:center;font-family:Cinzel,serif;font-size:11px;letter-spacing:3px;color:var(--dim)}
+.muted{color:var(--muted)}
+.it{font-style:italic}
+input[type=text],input[type=number],textarea{width:100%;min-height:46px;padding:10px 12px;border-radius:4px;border:1px solid var(--faint);background:var(--bg);color:var(--ink);font-family:'EB Garamond',serif;font-size:18px}
+textarea{min-height:90px;resize:none}
+input::placeholder,textarea::placeholder{color:var(--dim)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--line);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-10.5px;border-radius:50%;background:var(--ink);border:3px solid var(--accent)}
+input[type=range]::-moz-range-track{height:3px;background:var(--line)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--ink);border:3px solid var(--accent)}
+
+/* ---------- startup ---------- */
+#startup{align-items:center;justify-content:center;gap:22px;padding:0;cursor:pointer}
+#startup .glow{position:absolute;left:50%;top:46%;width:520px;height:360px;margin:-180px 0 0 -260px;border-radius:50%;background:radial-gradient(closest-side,var(--orb1),var(--orb2) 55%,transparent 100%);opacity:0;pointer-events:none}
+.mark{position:relative;display:flex;align-items:center;gap:14px;height:120px}
+.crosswrap{display:inline-flex;flex:none;transform:translateX(var(--shift,0px));transition:transform 1.1s cubic-bezier(.45,0,.2,1)}
+#startup.run .crosswrap{transform:none}
+.mark svg.cross{width:58px;height:58px;flex:none;opacity:.35}
+.word{font-family:'UnifrakturMaguntia',serif;font-size:76px;line-height:1;padding:0 4px 6px 0;-webkit-background-clip:text;background-clip:text;color:transparent;clip-path:inset(-20% 100% -20% 0)}
+.wordmark{font-family:'UnifrakturMaguntia',serif;font-size:30px;line-height:1;padding:0 3px 3px 0;-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-theme="templar"] .wordmark{background-image:linear-gradient(180deg,#FFE7A8 0%,#F2A24A 34%,#D2643A 66%,#8E2A1C 100%)}
+:root[data-theme="teutonic"] .wordmark{background-image:linear-gradient(100deg,#8B9097 0%,#F2F3F5 30%,#9EA3AA 55%,#FFFFFF 75%,#7D828A 100%)}
+:root[data-theme="templar"] .word{background-image:linear-gradient(180deg,#FFE7A8 0%,#F2A24A 34%,#D2643A 66%,#8E2A1C 100%)}
+:root[data-theme="teutonic"] .word{background-image:linear-gradient(100deg,#6F747B 0%,#E9EBEE 18%,#9EA3AA 32%,#FFFFFF 46%,#8B9097 60%,#D7DADE 78%,#5E636A 100%);background-size:220% 100%}
+.flames{position:absolute;left:22px;bottom:30px;width:280px;height:110px;transform-origin:0 100%;opacity:0;pointer-events:none}
+.tongue{position:absolute;bottom:0;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;background:radial-gradient(ellipse at 50% 78%,#FFF3C4 0%,#FFB347 24%,#E8622C 52%,rgba(142,42,28,.55) 70%,rgba(142,42,28,0) 82%);filter:blur(5px);mix-blend-mode:screen;transform-origin:50% 100%;animation:flick 1.3s ease-in-out infinite alternate}
+@keyframes flick{0%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.18) scaleX(.9) translateY(-3px)}100%{transform:scaleY(.92) scaleX(1.06) translateY(1px)}}
+.flash{position:absolute;inset:-10%;background:radial-gradient(circle at 50% 46%,#FFFFFF 0%,rgba(255,255,255,.85) 18%,rgba(230,232,236,.35) 42%,rgba(255,255,255,0) 70%);opacity:0;pointer-events:none;z-index:3}
+.eagle-wm{position:absolute;left:50%;top:46%;width:360px;height:241px;margin:-120px 0 0 -180px;opacity:0;pointer-events:none}
+.eagle{background:linear-gradient(180deg,#FFFFFF 0%,#D9DCE0 40%,#8A8F96 100%);-webkit-mask:url(images/eagle.png) center/contain no-repeat;mask:url(images/eagle.png) center/contain no-repeat}
+#home-eagle{width:66px;height:44px;display:none}
+:root[data-theme="teutonic"] #home-eagle{display:block}
+:root[data-theme="teutonic"] #home-emblem{display:none}
+.phoenix-wm{position:absolute;left:50%;top:46%;width:360px;height:263px;margin:-131px 0 0 -180px;opacity:0;pointer-events:none}
+.phoenix{background:linear-gradient(180deg,#FFEDB8 0%,#F5AA4E 35%,#D8603A 65%,#7A2014 100%);-webkit-mask:url(images/phoenix.png) center/contain no-repeat;mask:url(images/phoenix.png) center/contain no-repeat}
+#home-phoenix{width:60px;height:44px;display:none}
+:root[data-theme="templar"] #home-phoenix{display:block}
+:root[data-theme="templar"] #home-emblem{display:none}
+:root[data-theme="teutonic"] .phoenix-wm{display:none}
+#startup .tag2{opacity:0}
+#startup .hint{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 40px);left:0;right:0;text-align:center}
+:root[data-theme="templar"] .flash,:root[data-theme="templar"] .eagle-wm{display:none}
+:root[data-theme="teutonic"] .flames{display:none}
+#startup.run .glow{animation:sGlow 7.93s ease-out both}
+#startup.run .cross{animation:sCross 7.93s ease-out both}
+#startup.run .flames{animation:sBurst 7.93s cubic-bezier(.2,.7,.2,1) both}
+#startup.run .word{animation:sWord 7.93s cubic-bezier(.3,.6,.2,1) both}
+:root[data-theme="teutonic"] #startup.run .word{animation:sWordT 7.93s cubic-bezier(.3,.6,.2,1) both,shine 3.6s linear 5.4s infinite}
+#startup.run .flash{animation:sFlash 7.93s ease-out both}
+#startup.run .eagle-wm{animation:sEagle 7.93s ease-out both}
+#startup.run .phoenix-wm{animation:sPhoenix 7.93s ease-out both}
+#startup.run .tag2{animation:sTag 7.93s ease-out both}
+#startup.run .hint{animation:sHint 7.93s ease-out both}
+@keyframes sGlow{0%{opacity:0}50%{opacity:.45}56%{opacity:1}100%{opacity:.75}}
+@keyframes sCross{0%{opacity:.35;transform:scale(.92);filter:brightness(.6)}26%{opacity:1;transform:scale(1);filter:brightness(1)}52%{filter:brightness(1.1)}55%{filter:brightness(2.2) drop-shadow(0 0 22px var(--hi))}72%{filter:brightness(1.25) drop-shadow(0 0 12px var(--accent))}100%{opacity:1;transform:scale(1);filter:brightness(1.1) drop-shadow(0 0 8px var(--accent))}}
+@keyframes sBurst{0%,52%{opacity:0;transform:scaleX(.08) scaleY(.4)}59%{opacity:1;transform:scaleX(1.12) scaleY(1.15)}76%{opacity:.7;transform:scale(1)}100%{opacity:.32;transform:scaleX(.96) scaleY(.85)}}
+@keyframes sWord{0%,53.5%{clip-path:inset(-20% 100% -20% 0);filter:brightness(2.6)}68%{clip-path:inset(-20% 0 -20% 0);filter:brightness(1.6)}100%{clip-path:inset(-20% 0 -20% 0);filter:brightness(1)}}
+@keyframes sWordT{0%,53%{clip-path:inset(-20% 100% -20% 0);filter:brightness(5)}56%{clip-path:inset(-20% 0 -20% 0);filter:brightness(4)}74%{filter:brightness(1.3)}100%{clip-path:inset(-20% 0 -20% 0);filter:brightness(1)}}
+@keyframes shine{from{background-position:100% 0}to{background-position:-120% 0}}
+@keyframes sFlash{0%,53%{opacity:0}55.5%{opacity:1}64%{opacity:.15}74%,100%{opacity:0}}
+@keyframes sEagle{0%,55%{opacity:0;transform:scale(1.06)}75%,100%{opacity:.11;transform:scale(1)}}
+@keyframes sPhoenix{0%,52%{opacity:0;transform:scale(.94) translateY(10px)}62%{opacity:.2;transform:scale(1.01)}100%{opacity:.12;transform:scale(1)}}
+@keyframes sTag{0%,74%{opacity:0;transform:translateY(6px)}88%,100%{opacity:1;transform:none}}
+@keyframes sHint{0%,80%{opacity:0}100%{opacity:1}}
+
+/* ---------- rosary ambient ---------- */
+.amb{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.halo{position:absolute;left:50%;top:50%;width:900px;height:900px;margin:-450px 0 0 -450px;border-radius:50%;background:repeating-conic-gradient(from 0deg,var(--halo) 0deg 3deg,transparent 3deg 15deg);-webkit-mask-image:radial-gradient(closest-side,#000 0%,rgba(0,0,0,.6) 35%,transparent 75%);mask-image:radial-gradient(closest-side,#000 0%,rgba(0,0,0,.6) 35%,transparent 75%);animation:spin 140s linear infinite}
+.orb{position:absolute;left:50%;top:50%;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;background:radial-gradient(closest-side,var(--orb1),var(--orb2) 50%,transparent 100%);animation:breathe 7.93s ease-in-out infinite}
+.spark{position:absolute;bottom:-12px;width:3px;height:3px;border-radius:50%;background:var(--spark);box-shadow:0 0 6px 2px var(--spark-glow);opacity:0;animation:rise 12s linear infinite}
+:root[data-theme="teutonic"] .spark:nth-child(3n){background:#C8A951;box-shadow:0 0 6px 2px rgba(200,169,81,.45)}
+:root[data-theme="teutonic"] .spark{animation-name:riseSlow}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes breathe{0%,100%{transform:scale(.88);opacity:.55}50%{transform:scale(1.06);opacity:1}}
+@keyframes rise{0%{transform:translate(0,0);opacity:0}10%{opacity:.85}50%{transform:translate(14px,-430px)}85%{opacity:.25}100%{transform:translate(-10px,-880px);opacity:0}}
+@keyframes riseSlow{0%{transform:translate(0,0);opacity:0}15%{opacity:.7}50%{transform:translate(-18px,-400px)}85%{opacity:.2}100%{transform:translate(12px,-860px);opacity:0}}
+.amb.paused .halo,.amb.paused .orb,.amb.paused .spark{animation-play-state:paused}
+#rosary>*:not(.amb):not(.fx){position:relative;z-index:1}
+.fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{height:46px;border:none;background:transparent;font-family:Cinzel,serif;font-size:13px;letter-spacing:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button:disabled{color:var(--faint);background:rgba(0,0,0,.25)}
+.seg small{font-size:9px;letter-spacing:2px}
+.prayer{flex:1;min-height:200px;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:20px;background:color-mix(in srgb,var(--card) 62%,transparent);border:1px solid var(--line);border-radius:4px}
+.prayer{position:relative;overflow:hidden}
+.prayer p{margin:0;white-space:pre-line;line-height:1.45;transition:opacity .32s ease}
+.beads{display:flex;align-items:center;justify-content:center;gap:10px;height:18px}
+.bead{width:12px;height:12px;border-radius:50%;border:1px solid var(--faint)}
+.bead.f{background:var(--bead);border-color:var(--bead)}
+.bead.c{width:14px;height:14px;background:var(--ink);border-color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--bead) 35%,transparent),0 0 12px 2px var(--spark-glow)}
+.track{height:3px;background:var(--line);border-radius:2px}
+.track i{display:block;height:3px;background:var(--accent);border-radius:2px;width:0}
+.sets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.sets button{height:36px;border-radius:4px;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 70%,transparent);font-family:Cinzel,serif;font-size:9.5px;letter-spacing:1px;color:var(--muted)}
+.sets button[aria-pressed="true"]{border-color:var(--accent);color:var(--ink)}
+button.bead{padding:0;background:transparent;cursor:pointer;position:relative}
+button.bead::after{content:"";position:absolute;inset:-10px}
+button.bead.f{background:var(--bead)}
+button.bead.c{background:var(--ink)}
+.seekwrap{position:relative;height:3px}
+.seekwrap input{position:absolute;left:0;right:0;top:-14px;height:30px;width:100%}
+.seekwrap input::-webkit-slider-runnable-track{background:transparent}
+.seekwrap input::-moz-range-track{background:transparent}
+.seekwrap input::-webkit-slider-thumb{width:18px;height:18px;margin-top:-8px}
+.ringwrap{display:flex;flex-direction:column;gap:14px;flex:1;min-height:0}
+#rosary.ring .ringwrap{padding:30px 36px 64px}
+#rosary.ring .seg{display:none}
+#rosary.ring .sets{gap:4px}
+#rosary.ring .sets button{font-size:8.5px;letter-spacing:.5px;padding:0 2px}
+#rosary.ring #r-seek{display:none!important}
+@media (max-height:760px){#rosary.ring{gap:8px}#rosary.ring .ringwrap{gap:8px;padding:26px 34px 60px}#rosary.ring #r-title{font-size:19px!important}#rosary.ring .ringwrap>div:first-child{min-height:50px!important}#rosary.ring .seg button{height:38px}#rosary.ring .sets button{height:30px}}
+#rosary.ring .beads{display:none}
+#rosary.ring .track{opacity:0}
+#rosary.ring .prayer{min-height:120px}
+#r-ring[aria-pressed="true"]{color:var(--accent)}
+#r-ring{color:var(--muted)}
+.play{width:68px;height:68px;border-radius:50%;border:1px solid var(--accent);background:color-mix(in srgb,var(--bg) 60%,transparent);display:flex;align-items:center;justify-content:center}
+
+/* ---------- training ---------- */
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row .main{flex:1;display:flex;flex-direction:column;gap:2px}
+.row .main b{font-weight:400;font-size:19px}
+.row .main span{font-size:14px;color:var(--muted)}
+.row .earn{font-family:Cinzel,serif;font-size:15px;color:var(--accent);min-width:34px;text-align:right}
+.add{width:44px;height:44px;border-radius:4px;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center}
+.entry{display:flex;gap:8px;padding:10px 0 4px}
+.entry input{flex:1}
+.entry .btn{width:auto;padding:0 18px;height:46px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:36px;padding:0 12px;border-radius:18px;border:1px solid var(--line);background:var(--card);font-family:Cinzel,serif;font-size:12px;letter-spacing:1px}
+
+/* ---------- scripture ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.steps button{height:38px;border-radius:4px;border:1px solid var(--line);background:transparent;font-family:Cinzel,serif;font-size:11px;letter-spacing:2px;color:var(--dim)}
+.steps button.done{background:var(--card2);color:var(--muted)}
+.steps button.cur{border-color:var(--accent);color:var(--ink)}
+.drill{display:flex;flex-direction:column;gap:12px;padding:18px;background:var(--card);border:1px solid var(--line);border-radius:4px}
+.verse{margin:0;font-size:21px;line-height:1.55}
+.gap{display:inline-block;min-width:56px;border-bottom:1px solid var(--accent);color:var(--dim);text-align:center}
+.msg{font-size:15px;min-height:20px}
+.msg.ok{color:var(--accent)}
+.msg.no{color:var(--muted)}
+.steps.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.steps.four button{font-size:10px;letter-spacing:1px}
+.lat{font-size:19px;line-height:1.5;margin:0}
+.lat sup{font-family:Cinzel,serif;font-size:10px;color:var(--accent);margin-right:4px}
+.eng{font-size:15px;line-height:1.45;color:var(--muted);margin:2px 0 0;font-style:italic}
+.il{display:flex;flex-wrap:wrap;gap:12px 9px;align-items:flex-end}
+.w{display:inline-flex;flex-direction:column;align-items:flex-start;min-width:14px}
+.w i{font-style:normal;font-size:11.5px;color:var(--muted);line-height:1.15;white-space:nowrap;margin-bottom:2px}
+.w b{font-weight:400;font-size:20px;line-height:1.2;white-space:nowrap}
+.w b.blank{display:inline-block;min-width:34px;border-bottom:1px solid var(--faint);height:22px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:var(--card);text-align:left;min-height:64px}
+.mini b{font-family:Cinzel,serif;font-weight:500;font-size:12px;letter-spacing:2px;color:var(--accent)}
+.mini span{font-size:14px;color:var(--muted)}
+.banner{border-color:var(--accent)}
+.grid73{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.bk{position:relative;height:50px;border:1px solid var(--line);border-radius:4px;background:var(--card);overflow:hidden;font-family:Cinzel,serif;font-size:10.5px;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;padding:0}
+.bk .fill{position:absolute;left:0;right:0;bottom:0;background:var(--accent);opacity:.32}
+.bk span{position:relative}
+.bk.done{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.bk.done .fill{display:none}
+.chgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.chb{height:44px;border-radius:4px;border:1px solid var(--line);background:var(--card);font-family:Cinzel,serif;font-size:13px}
+.chb[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.stat{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line);font-size:17px}
+.stat span:last-child{font-family:Cinzel,serif;font-size:14px;color:var(--muted)}
+.stat .up{color:var(--accent)}
+.conf{display:flex;justify-content:space-between;align-items:center;min-height:46px;border-bottom:1px solid var(--line);font-size:17px}
+
+/* ---------- settings ---------- */
+.themes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.theme{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 10px;border-radius:4px;border:1px solid var(--line);background:var(--card)}
+.theme[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.theme span{font-family:Cinzel,serif;font-size:13px;letter-spacing:3px}
+.swatch{display:flex;gap:4px}
+.swatch i{width:16px;height:16px;border-radius:50%;border:1px solid rgba(255,255,255,.15)}
+.opt{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0;border:none;border-bottom:1px solid var(--line);background:transparent;font-size:18px;width:100%;text-align:left}
+.opt:disabled{color:var(--faint)}
+.opt[aria-pressed="false"] .tick{visibility:hidden}
+.opt small{font-family:Cinzel,serif;font-size:10px;letter-spacing:2px}
+.slider{display:flex;flex-direction:column;gap:2px}
+.slider .top{display:flex;justify-content:space-between;font-size:18px}
+.slider .top span:last-child{font-family:Cinzel,serif;font-size:13px;color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){.ember,.halo,.orb,.spark,.tongue{animation:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="ember" aria-hidden="true"></div>
+
+  <!-- STARTUP -->
+  <section id="startup" class="screen on" aria-label="Scroll">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="eagle-wm eagle" aria-hidden="true"></div>
+    <div class="phoenix-wm phoenix" aria-hidden="true"></div>
+    <div class="flash" aria-hidden="true"></div>
+    <div class="mark" role="img" aria-label="Scroll">
+      <div class="flames" aria-hidden="true">
+        <span class="tongue" style="left:-6px;width:46px;height:92px;animation-duration:1.1s"></span>
+        <span class="tongue" style="left:28px;width:40px;height:76px;animation-duration:1.45s;animation-delay:-.3s"></span>
+        <span class="tongue" style="left:64px;width:48px;height:104px;animation-duration:1.25s;animation-delay:-.6s"></span>
+        <span class="tongue" style="left:104px;width:38px;height:70px;animation-duration:1.6s;animation-delay:-.2s"></span>
+        <span class="tongue" style="left:140px;width:44px;height:88px;animation-duration:1.15s;animation-delay:-.9s"></span>
+        <span class="tongue" style="left:180px;width:34px;height:60px;animation-duration:1.5s;animation-delay:-.45s"></span>
+        <span class="tongue" style="left:214px;width:30px;height:48px;animation-duration:1.35s;animation-delay:-.7s"></span>
+        <span class="tongue" style="left:244px;width:24px;height:34px;animation-duration:1.2s;animation-delay:-.15s"></span>
+      </div>
+      <span class="crosswrap"><svg class="cross" aria-hidden="true" viewBox="0 0 100 100"><use href="#cross"></use></svg></span>
+      <span class="word">Scroll</span>
+    </div>
+    <span class="cz tag2" id="motto-start" style="font-size:12px;letter-spacing:5px;color:var(--muted)">ORA · LABORA · DISCE</span>
+    <span class="cz hint" id="start-hint" style="font-size:11px;letter-spacing:3px;color:var(--faint)">TAP TO BEGIN</span>
+  </section>
+
+  <!-- HOME -->
+  <section id="home" class="screen" aria-label="Today's rule">
+    <div class="bar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 100 100"><use href="#cross"></use></svg>
+        <span class="wordmark">Scroll</span>
+      </div>
+      <div style="display:flex;align-items:center">
+        <span class="cz" id="feria" style="font-size:11px;letter-spacing:2px;color:var(--muted)"></span>
+        <button class="iconbtn" data-go="settings" aria-label="Settings" style="margin-right:-12px">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="color:var(--muted)"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 0 14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+      <svg id="home-emblem" aria-hidden="true" width="38" height="38" viewBox="0 0 100 100"></svg>
+      <div id="home-eagle" class="eagle" aria-hidden="true"></div>
+      <div id="home-phoenix" class="phoenix" aria-hidden="true"></div>
+      <span class="label" id="seal-label">MINUTES EARNED TODAY</span>
+      <span class="cz" id="minutes" style="font-weight:600;font-size:64px;line-height:1;letter-spacing:2px">0:00</span>
+      <span class="it muted" id="seal-sub" style="font-size:16px;text-align:center"></span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span class="label">REGULA DIEI</span>
+      <button class="card" data-go="rosary" id="card-anima"><span class="tag">ANIMA</span><span class="main"><b id="anima-t"></b><span id="anima-s"></span></span><span class="end" id="anima-e"></span></button>
+      <button class="card" data-go="scripture" id="card-mens"><span class="tag">MENS</span><span class="main"><b id="mens-t">Lectio divina</b><span id="mens-s"></span></span><span class="end" id="mens-e"></span></button>
+      <button class="card" data-go="training" id="card-corpus"><span class="tag">CORPUS</span><span class="main"><b id="corpus-t"></b><span id="corpus-s"></span></span><span class="end" id="corpus-e"></span></button>
+    </div>
+    <div class="row2">
+      <button class="mini" data-go="bible"><b>BIBLIA</b><span id="home-bible"></span></button>
+      <button class="mini" data-go="confession"><b>CONFESSIO</b><span id="home-conf"></span></button>
+    </div>
+    <button class="card banner" data-go="report" id="home-report" hidden><span class="tag">HEBD.</span><span class="main"><b>Weekly report ready</b><span id="home-report-s"></span></span></button>
+    <span class="motto" id="motto" style="margin-top:auto"></span>
+  </section>
+
+  <!-- ROSARY -->
+  <section id="rosary" class="screen" aria-label="Rosary" style="gap:14px">
+    <div class="amb paused" id="amb" aria-hidden="true">
+      <div class="halo"></div><div class="orb"></div>
+      <span class="spark" style="left:8%;animation-duration:13s;animation-delay:-1s"></span>
+      <span class="spark" style="left:17%;animation-duration:10s;animation-delay:-6s"></span>
+      <span class="spark" style="left:24%;animation-duration:15s;animation-delay:-3s"></span>
+      <span class="spark" style="left:33%;animation-duration:11s;animation-delay:-9s"></span>
+      <span class="spark" style="left:41%;animation-duration:14s;animation-delay:-12s"></span>
+      <span class="spark" style="left:49%;animation-duration:12s;animation-delay:-4s"></span>
+      <span class="spark" style="left:56%;animation-duration:16s;animation-delay:-8s"></span>
+      <span class="spark" style="left:63%;animation-duration:10.5s;animation-delay:-2s"></span>
+      <span class="spark" style="left:71%;animation-duration:13.5s;animation-delay:-10s"></span>
+      <span class="spark" style="left:78%;animation-duration:11.5s;animation-delay:-5s"></span>
+      <span class="spark" style="left:86%;animation-duration:15.5s;animation-delay:-7s"></span>
+      <span class="spark" style="left:93%;animation-duration:12.5s;animation-delay:-11s"></span>
+    </div>
+    <canvas class="fx" id="r-fx" aria-hidden="true"></canvas>
+    <div class="bar bar3">
+      <button class="iconbtn" data-go="home" aria-label="Back" style="margin-left:-12px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="title-sm">ANIMA</span>
+      <span style="display:flex;margin-right:-12px">
+      <button class="iconbtn" id="r-ring" aria-label="Rosary ring view" aria-pressed="false"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></svg></button>
+      <button class="iconbtn" data-go="settings" aria-label="Settings"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="color:var(--muted)"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+      </span>
+    </div>
+    <div class="ringwrap" id="r-wrap">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-height:62px">
+      <span class="label" id="r-stage"></span>
+      <span class="cz" id="r-title" style="font-weight:600;font-size:22px;line-height:1.25"></span>
+    </div>
+    <div class="seg" role="group" aria-label="Prayer language">
+      <button data-lang="en" aria-pressed="true">ENGLISH</button>
+      <button disabled aria-label="Latin, coming soon">LATINA<small>SOON</small></button>
+      <button data-lang="de" aria-pressed="false">DEUTSCH</button>
+    </div>
+    <div class="sets" id="r-sets" role="group" aria-label="Choose mysteries" hidden>
+      <button data-set="joyful">JOYFUL</button><button data-set="luminous">LUMINOUS</button><button data-set="sorrowful">SORROWFUL</button><button data-set="glorious">GLORIOUS</button>
+    </div>
+    <div class="prayer"><span class="label" id="r-label" style="font-size:11px"></span><p id="r-text"></p></div>
+    </div>
+    <div class="beads" id="r-beads" role="group"></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="seekwrap"><div class="track"><i id="r-bar"></i></div><input type="range" id="r-seek" min="0" max="1000" step="0.1" value="0" aria-label="Position in the rosary" hidden></div>
+      <div class="cz" style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:2px;color:var(--muted)"><span id="r-prayed"></span><span id="r-remain"></span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+      <button class="play" id="r-play" aria-label="Pray"></button>
+      <span class="it muted" id="r-cap" style="font-size:15px;text-align:center"></span>
+    </div>
+  </section>
+
+  <!-- TRAINING -->
+  <section id="training" class="screen" aria-label="Training">
+    <div class="bar bar3">
+      <button class="iconbtn" data-go="home" aria-label="Back" style="margin-left:-12px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="title-sm">CORPUS</span><span style="width:32px"></span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <span class="label">EARNED TODAY</span>
+      <span class="cz" id="t-total" style="font-weight:600;font-size:56px;line-height:1"></span>
+      <span class="it muted" style="font-size:16px">Ten minutes per measure of labour</span>
+    </div>
+    <div class="rule" id="t-rows"></div>
+    <div id="t-log" class="muted" style="font-size:14px"></div>
+    <span class="label" style="margin-top:6px">THIS WEEK · SUNDAY TO SATURDAY</span>
+    <div id="t-week"></div>
+    <button class="btn ghost" data-go="report">LAST WEEK'S REPORT</button>
+  </section>
+
+  <!-- SCRIPTURE -->
+  <section id="scripture" class="screen" aria-label="Scripture">
+    <div class="bar bar3">
+      <button class="iconbtn" data-go="home" aria-label="Back" style="margin-left:-12px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="title-sm">MENS</span><span class="virtus" id="s-virtus"></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M7 4h11a2 2 0 0 1 0 4H9"/><path d="M7 4a2 2 0 0 0 0 4h2v10a2 2 0 0 1-2 2"/><path d="M7 20h11a2 2 0 0 0 0-4h-2V8"/></svg>
+      <span style="display:flex;flex-direction:column"><span class="cz" id="s-ref" style="font-weight:600;font-size:22px"></span><span class="it muted" style="font-size:15px">Biblia Sacra Vulgata · Douay-Rheims</span></span>
+    </div>
+    <div class="steps four" id="s-steps"></div>
+    <div class="drill" id="s-drill"></div>
+    <span class="muted" id="s-count" style="text-align:center;font-size:15px;margin-top:auto"></span>
+  </section>
+
+  <!-- BIBLE GRID -->
+  <section id="bible" class="screen" aria-label="Bible reading">
+    <div class="bar bar3">
+      <button class="iconbtn" data-go="home" aria-label="Back" style="margin-left:-12px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="title-sm">BIBLIA</span><span style="width:32px"></span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <span class="cz" id="b-books" style="font-weight:600;font-size:40px;line-height:1"></span>
+      <span class="muted" id="b-ch" style="font-size:15px"></span>
+    </div>
+    <span class="label">VETUS TESTAMENTUM</span>
+    <div class="grid73" id="b-ot"></div>
+    <span class="label">NOVUM TESTAMENTUM</span>
+    <div class="grid73" id="b-nt"></div>
+    <span class="it" style="font-size:14px;color:var(--dim);text-align:center">Tap a book to mark the chapters you have read. Chapters finished in Mens fill in on their own.</span>
+  </section>
+
+  <!-- BOOK -->
+  <section id="book" class="screen" aria-label="Book chapters">
+    <div class="bar bar3">
+      <button class="iconbtn" data-go="bible" aria-label="Back" style="margin-left:-12px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="title-sm">LIBER</span><span style="width:32px"></span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span class="cz" id="k-name" style="font-weight:600;font-size:24px"></span>
+      <span class="muted" id="k-sum" style="font-size:15px"></span>
+    </div>
+    <div class="chgrid" id="k-grid"></div>
+    <div class="row2"><button class="btn ghost" id="k-all">MARK ALL READ</button><button class="btn ghost" id="k-none">CLEAR</button></div>
+  </section>
+
+  <!-- CONFESSION -->
+  <section id="confession" class="screen" aria-label="Confession log">
+    <div class="bar bar3">
+      <button class="iconbtn" data-go="home" aria-label="Back" style="margin-left:-12px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="title-sm">CONFESSIO</span><span style="width:32px"></span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0">
+      <span class="label">LAST CONFESSION</span>
+      <span class="cz" id="c-last" style="font-weight:600;font-size:34px;line-height:1.1;text-align:center"></span>
+      <span class="it muted" id="c-date" style="font-size:16px"></span>
+    </div>
+    <div id="c-act"></div>
+    <span class="label">LOG</span>
+    <div id="c-list" class="rule"></div>
+  </section>
+
+  <!-- WEEKLY REPORT -->
+  <section id="report" class="screen" aria-label="Weekly report">
+    <div class="bar bar3">
+      <button class="iconbtn" data-go="training" aria-label="Back" style="margin-left:-12px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="title-sm">HEBDOMAS</span><span style="width:32px"></span>
+    </div>
+    <div id="w-body" style="display:flex;flex-direction:column;gap:14px"></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings" class="screen" aria-label="Settings" style="gap:22px">
+    <div class="bar bar3">
+      <button class="iconbtn" id="set-back" aria-label="Back" style="margin-left:-12px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="title-sm">SETTINGS</span><span style="width:32px"></span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span class="label">ORDER</span>
+      <div class="themes">
+        <button class="theme" data-theme-pick="templar" aria-pressed="false">
+          <svg aria-hidden="true" width="40" height="40" viewBox="0 0 100 100"><use href="#cross-templar"></use></svg>
+          <span>TEMPLAR</span>
+          <span class="swatch"><i style="background:#0F0E0C"></i><i style="background:#E8E0CC"></i><i style="background:#D2643A"></i><i style="background:#F2A24A"></i></span>
+        </button>
+        <button class="theme" data-theme-pick="teutonic" aria-pressed="false">
+          <svg aria-hidden="true" width="40" height="40" viewBox="0 0 100 100"><use href="#cross-teutonic"></use></svg>
+          <span>TEUTONIC</span>
+          <span class="swatch"><i style="background:#0C0C0D"></i><i style="background:#ECECEE"></i><i style="background:#9EA3AA"></i><i style="background:#C8A951"></i></span>
+        </button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <span class="label">SOUND</span>
+      <label class="slider"><span class="top"><span>Music</span><span id="v-music"></span></span><input type="range" min="0" max="100" id="l-music"></label>
+      <label class="slider"><span class="top"><span>Prayer voice</span><span id="v-voice"></span></span><input type="range" min="0" max="100" id="l-voice"></label>
+      <label class="slider"><span class="top"><span>Music under the rosary</span><span id="v-under"></span></span><input type="range" min="0" max="100" id="l-under"></label>
+      <span class="it" style="font-size:14px;color:var(--dim)">Music under the rosary is a share of the music level.</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <span class="label">PRAYER LANGUAGE</span>
+      <div class="rule">
+        <button class="opt" data-lang="en" aria-pressed="true">English <svg class="tick" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M5 12l5 5 9-10"/></svg></button>
+        <button class="opt" disabled>Latina <small>COMING SOON</small></button>
+        <button class="opt" data-lang="de" aria-pressed="false">Deutsch <svg class="tick" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M5 12l5 5 9-10"/></svg></button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <span class="label">MYSTERIES</span>
+      <span style="font-size:17px">Follow the day of the week</span>
+      <span class="muted" style="font-size:14px">Joyful Mon · Sat — Sorrowful Tue · Fri — Glorious Wed · Sun — Luminous Thu</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span class="label">BACKUP</span>
+      <span class="muted" style="font-size:14px">Copy your progress to keep it safe or carry it to another copy of Scroll.</span>
+      <div class="row2"><button class="btn ghost" id="b-copy">COPY BACKUP</button><button class="btn ghost" id="b-restore">RESTORE</button></div>
+      <button class="btn ghost" id="b-file" hidden>SAVE BACKUP FILE</button>
+      <div id="b-panel" hidden style="display:flex;flex-direction:column;gap:8px">
+        <label class="sr" for="b-text">Backup text</label>
+        <textarea id="b-text" placeholder="Paste a Scroll backup here" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+        <label class="btn ghost" id="b-open" hidden style="display:flex;align-items:center;justify-content:center">OPEN BACKUP FILE<input type="file" id="b-input" accept="application/json,.json,text/plain" style="display:none"></label>
+        <div class="row2"><button class="btn" id="b-apply">RESTORE IT</button><button class="btn ghost" id="b-cancel">CANCEL</button></div>
+      </div>
+      <span class="msg" id="b-msg"></span>
+    </div>
+    <span class="motto" id="sync-note" style="margin-top:auto">SCROLL · V1</span>
+  </section>
+
+  <audio id="music" src="audio/theme.mp4" loop preload="auto" playsinline></audio>
+  <audio id="voice" preload="none" playsinline></audio>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="fire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7A8"/><stop offset=".45" stop-color="#F2A24A"/><stop offset="1" stop-color="#D2643A"/></linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".35" stop-color="#C9CCD1"/><stop offset=".6" stop-color="#8B9097"/><stop offset="1" stop-color="#E6E8EB"/></linearGradient>
+    <polygon id="pattee" points="32,4 68,4 56,44 96,32 96,68 56,56 68,96 32,96 44,56 4,68 4,32 44,44"/>
+    <g id="cross-templar"><use href="#pattee" fill="url(#fire)"/></g>
+    <g id="cross-teutonic"><g transform="translate(50 50) scale(.86) translate(-50 -50)"><use href="#pattee" fill="url(#steel)" stroke="url(#steel)" stroke-width="11" stroke-linejoin="miter" stroke-miterlimit="10"/><use href="#pattee" fill="#0B0B0C"/></g></g>
+    <g id="flame"><path d="M50 10c5 13 21 22 21 41a21 21 0 0 1-42 0c0-10 5-16 10-20 0 8 4 14 10 15-2-13-3-23 1-36z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/></g>
+  </defs>
+</svg>
+
+<script>
+(function () {
+'use strict';
+// ---------------- data ----------------
+var DUR = [5.305,46.110,21.760,15.650,11.000,11.610,37.575,27.220,3.130,3.275,4.370,4.510,4.930,5.150,4.000,5.280,3.705,4.910,4.195,4.595,3.365,3.655,4.310,3.060,2.930,3.885,3.370,4.665];
+var SETS = {
+  joyful:    { first: 9,  name: 'Joyful',    latin: 'GAUDIOSA', file: 'audio/rosary-joyful.mp4',    titles: ['', 'The Annunciation', 'The Visitation', 'The Nativity', 'The Presentation', 'The Finding in the Temple'] },
+  luminous:  { first: 14, name: 'Luminous',  latin: 'LUMINOSA', file: 'audio/rosary-luminous.mp4',  titles: ['', 'The Baptism in the Jordan', 'The Wedding at Cana', 'The Proclamation of the Kingdom', 'The Transfiguration', 'The Institution of the Eucharist'] },
+  sorrowful: { first: 19, name: 'Sorrowful', latin: 'DOLOROSA', file: 'audio/rosary-sorrowful.mp4', titles: ['', 'The Agony in the Garden', 'The Scourging at the Pillar', 'The Crowning with Thorns', 'The Carrying of the Cross', 'The Crucifixion'] },
+  glorious:  { first: 24, name: 'Glorious',  latin: 'GLORIOSA', file: 'audio/rosary-glorious.mp4',  titles: ['', 'The Resurrection', 'The Ascension', 'The Descent of the Holy Spirit', 'The Assumption', 'The Coronation of Mary'] }
+};
+var BY_DAY = ['glorious', 'joyful', 'sorrowful', 'glorious', 'luminous', 'sorrowful', 'joyful'];
+var TEXT = {
+  1: 'In the name of the Father, and of the Son, and of the Holy Spirit. Amen.',
+  2: 'I believe in God, the Father almighty, Creator of heaven and earth; and in Jesus Christ, His only Son, our Lord, who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died, and was buried. He descended into hell; on the third day He rose again from the dead; He ascended into heaven, and is seated at the right hand of God the Father almighty; from there He will come to judge the living and the dead. I believe in the Holy Spirit, the holy catholic Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and life everlasting. Amen.',
+  3: 'Our Father, who art in heaven, hallowed be thy name; thy kingdom come; thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.',
+  4: 'Hail Mary, full of grace, the Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.',
+  5: 'Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen.',
+  6: 'O my Jesus, forgive us our sins, save us from the fires of hell; lead all souls to heaven, especially those most in need of thy mercy.',
+  7: 'Hail, holy Queen, Mother of mercy, our life, our sweetness and our hope. To thee do we cry, poor banished children of Eve. To thee do we send up our sighs, mourning and weeping in this valley of tears. Turn then, most gracious advocate, thine eyes of mercy toward us, and after this our exile, show unto us the blessed fruit of thy womb, Jesus. O clement, O loving, O sweet Virgin Mary.\nV. Pray for us, O holy Mother of God.\nR. That we may be made worthy of the promises of Christ.',
+  8: 'Let us pray. O God, whose only begotten Son, by His life, death, and resurrection, has purchased for us the rewards of eternal life; grant, we beseech Thee, that while meditating on these mysteries of the most holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen.',
+  9: 'The first Joyful Mystery is the Annunciation.', 10: 'The second Joyful Mystery is the Visitation.', 11: 'The third Joyful Mystery is the Nativity of Our Lord.', 12: 'The fourth Joyful Mystery is the Presentation in the Temple.', 13: 'The fifth Joyful Mystery is the Finding of Jesus in the Temple.',
+  14: 'The first Luminous Mystery is the Baptism of the Lord in the Jordan.', 15: 'The second Luminous Mystery is the Wedding at Cana.', 16: 'The third Luminous Mystery is the Proclamation of the Kingdom of God.', 17: 'The fourth Luminous Mystery is the Transfiguration.', 18: 'The fifth Luminous Mystery is the Institution of the Eucharist.',
+  19: 'The first Sorrowful Mystery is the Agony in the Garden.', 20: 'The second Sorrowful Mystery is the Scourging at the Pillar.', 21: 'The third Sorrowful Mystery is the Crowning with Thorns.', 22: 'The fourth Sorrowful Mystery is the Carrying of the Cross.', 23: 'The fifth Sorrowful Mystery is the Crucifixion and Death of Our Lord.',
+  24: 'The first Glorious Mystery is the Resurrection.', 25: 'The second Glorious Mystery is the Ascension.', 26: 'The third Glorious Mystery is the Descent of the Holy Spirit.', 27: 'The fourth Glorious Mystery is the Assumption of Mary.', 28: 'The fifth Glorious Mystery is the Coronation of Mary as Queen of Heaven and Earth.'
+};
+var NAME = {1:'SIGN OF THE CROSS',2:"APOSTLES' CREED",3:'OUR FATHER',4:'HAIL MARY',5:'GLORY BE',6:'FATIMA PRAYER',7:'HAIL, HOLY QUEEN',8:'CLOSING PRAYER'};
+var ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
+var EXERCISES = [
+  { k: 'run',   name: 'Run',   unit: 1,   word: 'mi',   step: 0.1, src: 'mi',   chips: [0.5, 1, 2, 3] },
+  { k: 'swim',  name: 'Swim',  unit: 500, word: 'yd',   step: 25,  src: 'yd',   chips: [250, 500, 1000] },
+  { k: 'pull',  name: 'Pull-ups', unit: 100, word: '', step: 1,  src: 'reps', chips: [10, 20, 25, 50] },
+  { k: 'push',  name: 'Push-ups', unit: 200, word: '', step: 1,  src: 'reps', chips: [25, 50, 100] },
+  { k: 'squat', name: 'Squats · lunges · sit-ups', unit: 300, word: '', step: 1, src: 'reps', chips: [25, 50, 100] }
+];
+
+// ---------------- state ----------------
+var LS = 'scroll.v1';
+function defaults() { return { theme: 'templar', levels: { music: 80, voice: 100, under: 20 }, days: {}, totalDrills: 0, nextPassage: 0, chapters: {}, confessions: [], weeks: {}, ring: false, updated: 0 }; }
+var S = defaults();
+try { var raw = localStorage.getItem(LS); if (raw) S = merge(S, JSON.parse(raw)); } catch (e) {}
+function merge(base, o) { for (var k in o) base[k] = o[k]; return base; }
+function dkey(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function parseKey(k) { var p = k.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+var todayKey = dkey();
+function day() {
+  var d = S.days[todayKey];
+  if (!d) {
+    d = S.days[todayKey] = { train: { run: 0, swim: 0, pull: 0, push: 0, squat: 0 }, log: [], rosary: { pos: 0, done: false } };
+    var keys = Object.keys(S.days).sort(); while (keys.length > 70) delete S.days[keys.shift()];
+  }
+  if (!d.mens) d.mens = { p: S.nextPassage || 0, lectio: false, cloze: false, trans: false, psalm: false };
+  return d;
+}
+var dbRef = null, writing = false, pendingWrite = false, writeTimer = null;
+function save(immediate) {
+  S.updated = Date.now();
+  try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {}
+  if (!dbRef) return;
+  clearTimeout(writeTimer);
+  writeTimer = setTimeout(flush, immediate ? 50 : 1500);
+}
+function flush() {
+  if (!dbRef) return;
+  if (writing) { pendingWrite = true; return; }
+  writing = true;
+  dbRef.set(JSON.parse(JSON.stringify(S))).catch(function () {}).then(function () {
+    writing = false; if (pendingWrite) { pendingWrite = false; flush(); }
+  });
+}
+(async function connect() {
+  try {
+    if (!window.claude || !window.claude.use) return;
+    var db = await window.claude.use('db'); var user = await window.claude.use('user');
+    if (!db || !user) return;
+    var id = await user.id(); if (!id) return;
+    dbRef = db.doc('data/users/' + id + '/state');
+    var snap = await dbRef.get();
+    if (snap.exists) {
+      var remote = snap.data();
+      if (remote && (remote.updated || 0) > (S.updated || 0)) {
+        S = merge(defaults(), JSON.parse(JSON.stringify(remote)));
+        try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {}
+        applyTheme(); applyLevels(); applyRing(); applyLangButtons(); curSet = null; loadRosary(); renderAll();
+      } else if ((S.updated || 0) > (remote.updated || 0)) flush();
+    } else flush();
+  } catch (e) {}
+})();
+
+// ---------------- helpers ----------------
+var $ = function (id) { return document.getElementById(id); };
+function fmt(s) { s = Math.max(0, Math.floor(s)); var m = Math.floor(s / 60), r = s % 60; return m + ':' + (r < 10 ? '0' : '') + r; }
+function norm(s) { return (s || '').toLowerCase().replace(/æ/g, 'ae').replace(/œ/g, 'oe').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/j/g, 'i').replace(/v/g, 'u').replace(/[^a-z ]+/g, ' ').replace(/\s+/g, ' ').trim(); }
+function setKey() { return BY_DAY[new Date().getDay()]; }
+function minutesFor(k, q) { var ex = EXERCISES.filter(function (e) { return e.k === k; })[0]; return Math.floor(q / ex.unit * 10 + 1e-9); }
+function earnedFor(t) { var m = 0; EXERCISES.forEach(function (e) { m += minutesFor(e.k, t[e.k] || 0); }); return m; }
+function earned() { return earnedFor(day().train); }
+function mensDone() { var m = day().mens; return (m.lectio ? 1 : 0) + (m.cloze ? 1 : 0) + (m.trans ? 1 : 0) + (m.psalm ? 1 : 0); }
+function roman(n) { var v = [[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']], s = ''; v.forEach(function (p) { while (n >= p[0]) { s += p[1]; n -= p[0]; } }); return s; }
+
+// ---------------- theme ----------------
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', S.theme);
+  var ti = $('touch-icon'); if (ti) ti.setAttribute('href', 'icons/icon-' + S.theme + '-180.png');
+  document.querySelector('meta[name=theme-color]').setAttribute('content', S.theme === 'teutonic' ? '#0C0C0D' : '#0F0E0C');
+  var crossId = S.theme === 'teutonic' ? '#cross-teutonic' : '#cross-templar';
+  document.querySelectorAll('svg use.crossref, svg use[href="#cross"], svg use[href="#cross-templar"].dyn, svg use[href="#cross-teutonic"].dyn').forEach(function (u) { u.setAttribute('href', crossId); u.classList.add('dyn'); });
+  $('home-emblem').innerHTML = '<use href="#flame" style="color:var(--accent)"></use>';
+  $('motto').textContent = S.theme === 'teutonic' ? 'HELFEN · WEHREN · HEILEN' : 'NON NOBIS, DOMINE';
+  document.querySelectorAll('[data-theme-pick]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-pick') === S.theme)); });
+}
+
+// ---------------- audio ----------------
+var music = $('music'), voice = $('voice');
+var ctx = null, mGain = null, vGain = null, rosaryPlaying = false;
+function ensureAudio() {
+  if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+    mGain = ctx.createGain(); vGain = ctx.createGain();
+    ctx.createMediaElementSource(music).connect(mGain).connect(ctx.destination);
+    ctx.createMediaElementSource(voice).connect(vGain).connect(ctx.destination);
+  } catch (e) { ctx = null; mGain = vGain = null; }
+  applyLevels(true);
+}
+function musicTarget() { var m = S.levels.music / 100; return rosaryPlaying ? m * S.levels.under / 100 : m; }
+function applyLevels(instant) {
+  var mt = musicTarget(), vt = S.levels.voice / 100;
+  if (ctx && mGain) {
+    var now = ctx.currentTime;
+    mGain.gain.cancelScheduledValues(now); vGain.gain.cancelScheduledValues(now);
+    if (instant) { mGain.gain.value = mt; vGain.gain.value = vt; }
+    else { mGain.gain.setTargetAtTime(mt, now, 0.6); vGain.gain.setTargetAtTime(vt, now, 0.2); }
+  } else { try { music.volume = mt; voice.volume = vt; } catch (e) {} }
+}
+function playMusic(fromStart) {
+  ensureAudio();
+  try { if (fromStart) music.currentTime = 0; var p = music.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
+}
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'visible' && ctx && ctx.state === 'suspended') ctx.resume();
+  if (document.visibilityState === 'visible' && dkey() !== todayKey) { todayKey = dkey(); loadRosary(); renderAll(); }
+});
+// any tap revives music if the system paused it
+document.addEventListener('pointerdown', function () { if (started && music.paused) playMusic(false); }, true);
+
+// ---------------- navigation ----------------
+var current = 'startup', started = false, prevForSettings = 'home';
+function go(name) {
+  if (current === 'rosary' && name !== 'rosary' && name !== 'settings' && rosaryPlaying) pauseRosary();
+  if (name === 'settings') prevForSettings = current;
+  if (name === 'scripture' && current !== 'scripture') { mensTab = null; transRevealed = false; wholePsalm = false; if (!day().mens.psalm) pv = { i: 0, revealed: false, said: 0 }; }
+  if (name === 'confession') confAsk = false;
+  document.querySelectorAll('.screen').forEach(function (s) { s.classList.toggle('on', s.id === name); });
+  current = name;
+  renderAll();
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-go]'); if (b) go(b.getAttribute('data-go'));
+});
+$('set-back').addEventListener('click', function () { go(prevForSettings === 'startup' ? 'home' : prevForSettings); });
+
+// ---------------- startup ----------------
+var st = $('startup'), startTimer = null;
+function centerCross() { var w = st.querySelector('.word'); if (w) st.style.setProperty('--shift', ((w.offsetWidth + 14) / 2) + 'px'); }
+centerCross(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(centerCross); window.addEventListener('resize', centerCross);
+st.addEventListener('click', function () {
+  if (!started) {
+    started = true;
+    playMusic(true);
+    st.classList.add('run');
+    $('start-hint').textContent = 'TAP TO ENTER';
+    startTimer = setTimeout(function () { if (current === 'startup') go('home'); }, 8400);
+  } else { clearTimeout(startTimer); go('home'); }
+});
+
+// ---------------- home ----------------
+function renderHome() {
+  var now = new Date(), wd = now.getDay();
+  var DAYS = ['DOMINICA', 'FERIA SECUNDA', 'FERIA TERTIA', 'FERIA QUARTA', 'FERIA QUINTA', 'FERIA SEXTA', 'SABBATO'];
+  var MON = ['IAN', 'FEB', 'MAR', 'APR', 'MAI', 'IUN', 'IUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  $('feria').textContent = DAYS[wd] + ' · ' + roman(now.getDate()) + ' ' + MON[now.getMonth()];
+  var d = day(), set = SETS[setKey()], m = earned(), soul = d.rosary.done, mind = mensDone() === 4;
+  $('minutes').textContent = m + ':00';
+  $('seal-sub').textContent = soul && mind ? 'Soul and mind are kept. The minutes are yours.' : 'Earned minutes are held until soul and mind are kept.';
+  $('anima-t').textContent = 'Rosary · ' + set.name + ' Mysteries';
+  var tl = timeline(set.first), pct = Math.min(100, Math.round(d.rosary.pos / tl.total * 100));
+  $('anima-s').textContent = soul ? 'Prayed in full today' + (d.rosary.extra ? ' · +' + d.rosary.extra + ' more' : '') : (d.rosary.pos > 1 ? fmt(tl.total - d.rosary.pos) + ' remaining' : 'Not yet begun · about ' + Math.round(tl.total / 60) + ' min');
+  $('anima-e').textContent = soul ? '✓' : pct + '%';
+  $('card-anima').classList.toggle('kept', soul);
+  var ps = passage();
+  $('mens-t').textContent = ps ? ps.ref : 'Lectio divina';
+  $('mens-s').textContent = mensDone() + ' of 4 drills · ' + (PSALM ? 'Psalmus ' + PSALM.vul : 'Psalm');
+  $('mens-e').textContent = mind ? '✓' : Math.round(mensDone() / 4 * 100) + '%';
+  $('card-mens').classList.toggle('kept', mind);
+  var bs = bibleStats();
+  $('home-bible').textContent = bs.books + ' of 73 books · ' + Math.round(bs.ch / 1334 * 100) + '%';
+  var lc = S.confessions.length ? S.confessions.slice().sort().pop() : null;
+  $('home-conf').textContent = lc ? 'Last: ' + agoText(lc) : 'None logged yet';
+  var rep = parseKey(todayKey).getDay() === 0 && weekSummary(addDays(weekStart(todayKey), -7));
+  $('home-report').hidden = !(rep && rep.daysTrained > 0);
+  if (rep) $('home-report-s').textContent = rep.minutes + ' min earned · ' + rep.daysTrained + ' of 7 days trained';
+  var parts = [];
+  EXERCISES.forEach(function (e) { var q = d.train[e.k]; if (q > 0) parts.push((e.k === 'run' ? q.toFixed(1) + ' mi run' : e.k === 'swim' ? q + ' yd swim' : q + ' ' + e.name.split(' ')[0].toLowerCase())); });
+  $('corpus-t').textContent = parts.length ? parts.slice(0, 2).join(' · ') : 'Nothing logged yet';
+  $('corpus-s').textContent = '+' + m + ' min earned today';
+  $('corpus-e').innerHTML = '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>';
+}
+
+// ---------------- rosary ----------------
+// German: every Ave Maria carries its mystery, so there are no separate announcements
+var DUR_DE = {"p1": 4.02, "p2": 38.32, "p3": 16.01, "p4": 8.86, "p5": 6.99, "p6": 9.12, "p7": 28.9, "p8": 19.77, "o1": 16.12, "o2": 16.06, "o3": 15.86, "m01": 17.71, "m02": 17.57, "m03": 17.43, "m04": 17.49, "m05": 17.57, "m06": 16.72, "m07": 17.25, "m08": 16.82, "m09": 16.64, "m10": 16.65, "m11": 16.43, "m12": 16.56, "m13": 17.06, "m14": 16.93, "m15": 16.67, "m16": 16.72, "m17": 16.56, "m18": 16.75, "m19": 17.29, "m20": 17.03};
+var HEILIGE = 'Heilige Maria, Mutter Gottes, bitte für uns Sünder jetzt und in der Stunde unseres Todes. Amen.';
+var AVE1 = 'Gegrüßet seist du, Maria, voll der Gnade, der Herr ist mit dir. Du bist gebenedeit unter den Frauen, und gebenedeit ist die Frucht deines Leibes, Jesus,';
+var CLAUSES_DE = ['den du, o Jungfrau, vom Heiligen Geist empfangen hast', 'den du, o Jungfrau, zu Elisabeth getragen hast', 'den du, o Jungfrau, in Betlehem geboren hast', 'den du, o Jungfrau, im Tempel aufgeopfert hast', 'den du, o Jungfrau, im Tempel wiedergefunden hast',
+  'der von Johannes getauft worden ist', 'der sich bei der Hochzeit in Kana offenbart hat', 'der uns das Reich Gottes verkündet hat', 'der auf dem Berg verklärt worden ist', 'der uns die Eucharistie geschenkt hat',
+  'der für uns Blut geschwitzt hat', 'der für uns gegeißelt worden ist', 'der für uns mit Dornen gekrönt worden ist', 'der für uns das schwere Kreuz getragen hat', 'der für uns gekreuzigt worden ist',
+  'der von den Toten auferstanden ist', 'der in den Himmel aufgefahren ist', 'der uns den Heiligen Geist gesandt hat', 'der dich, o Jungfrau, in den Himmel aufgenommen hat', 'der dich, o Jungfrau, im Himmel gekrönt hat'];
+var OPEN_DE = ['der in uns den Glauben vermehre', 'der in uns die Hoffnung stärke', 'der in uns die Liebe entzünde'];
+var TEXT_DE = {
+  p1: 'Im Namen des Vaters und des Sohnes und des Heiligen Geistes. Amen.',
+  p2: 'Ich glaube an Gott, den Vater, den Allmächtigen, den Schöpfer des Himmels und der Erde, und an Jesus Christus, seinen eingeborenen Sohn, unsern Herrn, empfangen durch den Heiligen Geist, geboren von der Jungfrau Maria, gelitten unter Pontius Pilatus, gekreuzigt, gestorben und begraben, hinabgestiegen in das Reich des Todes, am dritten Tage auferstanden von den Toten, aufgefahren in den Himmel; er sitzt zur Rechten Gottes, des allmächtigen Vaters; von dort wird er kommen, zu richten die Lebenden und die Toten. Ich glaube an den Heiligen Geist, die heilige katholische Kirche, Gemeinschaft der Heiligen, Vergebung der Sünden, Auferstehung der Toten und das ewige Leben. Amen.',
+  p3: 'Vater unser im Himmel, geheiligt werde dein Name. Dein Reich komme. Dein Wille geschehe, wie im Himmel so auf Erden. Unser tägliches Brot gib uns heute. Und vergib uns unsere Schuld, wie auch wir vergeben unsern Schuldigern. Und führe uns nicht in Versuchung, sondern erlöse uns von dem Bösen. Amen.',
+  p5: 'Ehre sei dem Vater und dem Sohn und dem Heiligen Geist, wie im Anfang, so auch jetzt und alle Zeit und in Ewigkeit. Amen.',
+  p6: 'O mein Jesus, verzeih uns unsere Sünden, bewahre uns vor dem Feuer der Hölle, führe alle Seelen in den Himmel, besonders jene, die deiner Barmherzigkeit am meisten bedürfen.',
+  p7: 'Sei gegrüßt, o Königin, Mutter der Barmherzigkeit, unser Leben, unsre Wonne und unsre Hoffnung, sei gegrüßt! Zu dir rufen wir verbannte Kinder Evas; zu dir seufzen wir trauernd und weinend in diesem Tal der Tränen. Wohlan denn, unsre Fürsprecherin, wende deine barmherzigen Augen uns zu, und nach diesem Elend zeige uns Jesus, die gebenedeite Frucht deines Leibes. O gütige, o milde, o süße Jungfrau Maria.\nBitte für uns, heilige Gottesmutter,\nauf dass wir würdig werden der Verheißungen Christi.',
+  p8: 'Lasset uns beten. Gott, dein eingeborener Sohn hat uns durch sein Leben, seinen Tod und seine Auferstehung den Lohn des ewigen Heils erworben. Wir bitten dich: Gib, dass wir diese Geheimnisse im heiligen Rosenkranz der seligen Jungfrau Maria betrachten, nachahmen, was sie enthalten, und erlangen, was sie verheißen. Durch Christus, unsern Herrn. Amen.'
+};
+OPEN_DE.forEach(function (c, i) { TEXT_DE['o' + (i + 1)] = AVE1 + ' ' + c + '. ' + HEILIGE; });
+CLAUSES_DE.forEach(function (c, i) { TEXT_DE['m' + String(i + 1).padStart(2, '0')] = AVE1 + ' ' + c + '. ' + HEILIGE; });
+var NAME_DE = { 1: 'KREUZZEICHEN', 2: 'GLAUBENSBEKENNTNIS', 3: 'VATERUNSER', 5: 'EHRE SEI DEM VATER', 6: 'FATIMA-GEBET', 7: 'SALVE REGINA', 8: 'SCHLUSSGEBET' };
+var TITLES_DE = {
+  joyful: ['Der freudenreiche Rosenkranz', 'Die Verkündigung', 'Die Heimsuchung', 'Die Geburt Jesu', 'Die Darstellung im Tempel', 'Die Wiederfindung im Tempel'],
+  luminous: ['Der lichtreiche Rosenkranz', 'Die Taufe im Jordan', 'Die Hochzeit zu Kana', 'Die Verkündigung des Reiches Gottes', 'Die Verklärung', 'Die Einsetzung der Eucharistie'],
+  sorrowful: ['Der schmerzhafte Rosenkranz', 'Die Todesangst am Ölberg', 'Die Geißelung', 'Die Dornenkrönung', 'Die Kreuztragung', 'Die Kreuzigung'],
+  glorious: ['Der glorreiche Rosenkranz', 'Die Auferstehung', 'Die Himmelfahrt', 'Die Sendung des Heiligen Geistes', 'Die Aufnahme Mariens in den Himmel', 'Die Krönung Mariens']
+};
+function lang() { return S.lang === 'de' ? 'de' : 'en'; }
+// entries: [start, clip, decade, bead, textKey, duration]; clip numbers mean the same prayer in every language
+var TLc = {};
+function timeline(first, lg) {
+  lg = lg || lang();
+  var ck = lg + first; if (TLc[ck]) return TLc[ck];
+  var seq = [];
+  if (lg === 'de') {
+    var off = first - 9;
+    seq = [[1,0,0,'p1'],[2,0,0,'p2'],[3,0,0,'p3'],[4,0,1,'o1'],[4,0,2,'o2'],[4,0,3,'o3'],[5,0,0,'p5']];
+    for (var d = 1; d <= 5; d++) { var mk = 'm' + String(off + d).padStart(2, '0'); seq.push([3, d, 0, 'p3']); for (var b = 1; b <= 10; b++) seq.push([4, d, b, mk]); seq.push([5, d, 0, 'p5'], [6, d, 0, 'p6']); }
+    seq.push([7,6,0,'p7'],[8,6,0,'p8'],[1,6,0,'p1']);
+  } else {
+    seq = [[1,0,0],[2,0,0],[3,0,0],[4,0,1],[4,0,2],[4,0,3],[5,0,0]];
+    for (var d2 = 1; d2 <= 5; d2++) { seq.push([first + d2 - 1, d2, 0], [3, d2, 0]); for (var b2 = 1; b2 <= 10; b2++) seq.push([4, d2, b2]); seq.push([5, d2, 0], [6, d2, 0]); }
+    seq.push([7,6,0],[8,6,0],[1,6,0]);
+    seq = seq.map(function (q) { return [q[0], q[1], q[2], String(q[0])]; });
+  }
+  var t = 0.6, tl = [];
+  seq.forEach(function (q) { var du = lg === 'de' ? DUR_DE[q[3]] : DUR[q[0] - 1]; tl.push([t, q[0], q[1], q[2], q[3], du]); t += du + 0.8; });
+  return (TLc[ck] = { tl: tl, total: t });
+}
+function textOf(e) { return lang() === 'de' ? TEXT_DE[e[4]] : TEXT[e[1]]; }
+function audioFor(k) { return lang() === 'de' ? 'audio/rosary-' + k + '-de.mp4' : SETS[k].file; }
+// keep your place when the language changes: same prayer, same bead
+function mapPos(t, fromLg, toLg) {
+  var f = SETS[curSet].first, A = timeline(f, fromLg).tl, B = timeline(f, toLg).tl, e = A[rIdx(A, t)];
+  var c = e[1] >= 9 ? 3 : e[1], frac = Math.max(0, Math.min(1, (t - e[0]) / e[5]));
+  for (var i = 0; i < B.length; i++) if (B[i][1] === c && B[i][2] === e[2] && B[i][3] === e[3]) return B[i][0] + (e[1] >= 9 ? 0 : frac * B[i][5]);
+  return 0;
+}
+var curLang = null;
+var curSet = null, lastIdx = -1, lastSaved = 0;
+// Daily rosary: today's mysteries, no skipping. Once it is kept, free prayer opens:
+// any mysteries, seek anywhere, as many as you like.
+function isFree() { return !!day().rosary.done; }
+function rState() {
+  var r = day().rosary;
+  if (!r.done) return r;
+  if (!r.free) r.free = { set: setKey(), pos: 0 };
+  return r.free;
+}
+function activeSetKey() { return isFree() ? rState().set : setKey(); }
+function loadRosary() {
+  var k = activeSetKey();
+  if (curSet === k && curLang === lang()) return;
+  if (rosaryPlaying) { try { voice.pause(); } catch (e) {} rosaryPlaying = false; applyLevels(); }
+  curSet = k; curLang = lang(); voice.src = audioFor(k); lastIdx = -1;
+}
+function rIdx(tl, t) { var i = 0; for (var k = 0; k < tl.length; k++) { if (tl[k][0] <= t + 0.05) i = k; else break; } return i; }
+function rTime() { return rosaryPlaying ? voice.currentTime : rState().pos; }
+var pageInfo = null;
+// split a prayer into pages that fit the panel, breaking at sentence or clause ends where possible
+function paginate(text, p) {
+  var box = p.parentElement, lab = $('r-label');
+  var avail = box.clientHeight - 40 - lab.offsetHeight - 12;
+  var m = $('r-measure');
+  if (!m) { m = document.createElement('p'); m.id = 'r-measure'; m.setAttribute('aria-hidden', 'true'); m.style.cssText = 'position:absolute;visibility:hidden;left:0;top:0;margin:0;white-space:pre-line;line-height:1.45'; box.appendChild(m); }
+  m.style.width = p.clientWidth + 'px'; m.style.fontSize = p.style.fontSize;
+  function fits(str) { m.textContent = str; return m.offsetHeight <= avail; }
+  if (avail < 40 || fits(text)) return [{ text: text, start: 0 }];
+  // units: lines, then sentences/clauses; a "V." or "R." stays glued to its line
+  var units = [];
+  text.split('\n').forEach(function (line, li) {
+    line.replace(/\b([VR])\. /g, '$1. ').replace(/([.;:?!]) +/g, '$1\u0001').split('\u0001').forEach(function (sent, si) {
+      if (sent) units.push({ s: sent, nl: li > 0 && si === 0 });
+    });
+  });
+  var out = [], page = '';
+  function join(pg, u) { return pg ? pg + (u.nl ? '\n' : ' ') + u.s : u.s; }
+  function add(u) { var tr = join(page, u); if (fits(tr)) { page = tr; return true; } return false; }
+  function flush() { if (page.trim()) out.push(page); page = ''; }
+  units.forEach(function (u) {
+    if (add(u)) return;
+    flush(); if (add(u)) return;
+    // a sentence too long for one page: break at commas, and only then between words
+    u.s.replace(/, +/g, ',\u0001').split('\u0001').forEach(function (ps, pi) {
+      var pu = { s: ps, nl: pi === 0 && u.nl };
+      if (add(pu)) return;
+      flush(); if (add(pu)) return;
+      ps.split(' ').forEach(function (w, wi) { var wu = { s: w, nl: wi === 0 && pu.nl }; if (!add(wu)) { flush(); add(wu); } });
+    });
+  });
+  flush();
+  var flat = text.replace(/\n/g, ' '), pos = 0;
+  return out.map(function (pg) {
+    var clean = pg.replace(/ /g, ' '), key = clean.replace(/\n/g, ' ').slice(0, 18), st = flat.indexOf(key, pos);
+    if (st < 0) st = pos; pos = st + 1;
+    return { text: clean, start: st };
+  });
+}
+function pageFor(lt, clip) {   // clip: the timeline entry
+  if (!pageInfo || pageInfo.pages.length < 2) return 0;
+  var len = textOf(clip).length, speech = Math.max(0.5, clip[5] - 0.5);
+  var ch = Math.max(0, (lt - 0.15) / speech) * len, k = 0;
+  pageInfo.pages.forEach(function (pg, j) { if (pg.start <= ch + 3) k = j; });
+  return k;
+}
+var pageTimer = null;
+function showPage(k, fade) {
+  var p = $('r-text'); if (!pageInfo) return;
+  pageInfo.cur = k;
+  clearTimeout(pageTimer);
+  var txt = pageInfo.pages[k].text;
+  if (!fade) { p.style.opacity = 1; p.textContent = txt; return; }
+  p.style.opacity = 0;
+  pageTimer = setTimeout(function () { p.textContent = txt; p.style.opacity = 1; }, 320);
+}
+function renderRosary(force) {
+  startFx();
+  var set = SETS[curSet], T = timeline(set.first), free = isFree();
+  var t = Math.min(rTime(), T.total);
+  var i = rIdx(T.tl, t), e = T.tl[i], clip = e[1], dec = e[2], bead = e[3];
+  $('r-bar').style.width = Math.min(100, t / T.total * 100).toFixed(1) + '%';
+  $('r-prayed').textContent = fmt(t) + ' PRAYED';
+  $('r-remain').textContent = fmt(T.total - t) + ' REMAIN';
+  // prayers longer than the panel are shown a page at a time, turning as the voice reaches each part
+  if (i === lastIdx && pageInfo && pageInfo.clip === clip && pageInfo.pages.length > 1) {
+    var k = pageFor(t - e[0], e); if (k !== pageInfo.cur) showPage(k, true);
+  }
+  var sk = $('r-seek'); sk.hidden = !free;
+  if (free && !seeking) { sk.max = T.total.toFixed(1); sk.value = t.toFixed(1); }
+  if (i === lastIdx && !force) return;
+  lastIdx = i;
+  $('r-sets').hidden = !free;
+  document.querySelectorAll('#r-sets [data-set]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set') === curSet)); });
+  var de = lang() === 'de';
+  if (dec === 0) { $('r-stage').textContent = de ? 'ERÖFFNUNG' : 'OPENING PRAYERS'; $('r-title').textContent = de ? TITLES_DE[curSet][0] : 'The ' + set.name + ' Mysteries'; }
+  else if (dec === 6) { $('r-stage').textContent = de ? 'ABSCHLUSS' : 'CLOSING PRAYERS'; $('r-title').textContent = 'Salve Regina'; }
+  else { $('r-stage').textContent = 'MYSTERIA ' + set.latin + ' · ' + ROMAN[dec]; $('r-title').textContent = de ? TITLES_DE[curSet][dec] : set.titles[dec]; }
+  var text = textOf(e), len = text.length;
+  var p = $('r-text');
+  var fs = len <= 120 ? 22 : len <= 260 ? 19 : 17; if (S.ring) fs = len <= 120 ? 20 : len <= 260 ? 18 : 17;
+  // shrink the type a little (never below 14px) rather than chop a prayer into many tiny pages
+  var pages;
+  for (var f = fs; f >= 14; f--) { p.style.fontSize = f + 'px'; pages = paginate(text, p); if (pages.length <= 4) break; }
+  pageInfo = { clip: clip, pages: pages, cur: -1 };
+  showPage(pageFor(t - e[0], e), false);
+  $('r-label').textContent = clip >= 9 ? 'THE MYSTERY' : (clip === 4 ? (de ? 'AVE MARIA · ' + bead + ' VON ' : 'HAIL MARY · ' + bead + ' OF ') + (dec === 0 ? 3 : 10) : (de ? NAME_DE[clip] : NAME[clip]));
+  var count = dec === 0 ? 3 : (dec === 6 ? 0 : 10);
+  var filled = clip === 4 ? bead : ((clip === 5 || clip === 6) ? count : 0);
+  var h = '';
+  for (var b = 1; b <= count; b++) {
+    var cls = 'bead' + (clip === 4 && b === bead ? ' c' : (b <= filled ? ' f' : ''));
+    h += free ? '<button class="' + cls + '" data-bead="' + b + '" aria-label="Hail Mary ' + b + '"></button>' : '<span class="' + cls + '"></span>';
+  }
+  var bx = $('r-beads'); bx.innerHTML = h; bx.setAttribute('data-dec', dec);
+  bx.setAttribute('role', free ? 'group' : 'img');
+  bx.setAttribute('aria-label', count ? 'Beads: ' + filled + ' of ' + count : 'Closing prayers');
+  renderRosaryControls();
+}
+function renderRosaryControls() {
+  var r = day().rosary, free = isFree();
+  $('r-play').innerHTML = rosaryPlaying
+    ? '<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'
+    : '<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5l11 7-11 7z"/></svg>';
+  $('r-play').setAttribute('aria-label', rosaryPlaying ? 'Pause' : 'Pray');
+  $('r-play').disabled = false; $('r-play').style.opacity = '1';
+  var extra = r.extra || 0;
+  $('r-cap').textContent = free
+    ? (rosaryPlaying ? 'Free prayer. Drag the bar or tap a bead to move.' : 'Anima is kept' + (extra ? ' · ' + extra + ' more prayed today.' : '. Pray again if you wish.'))
+    : rosaryPlaying ? 'No skipping. Pausing stops the count.' : (r.pos > 1 ? 'Paused. The count waits for you.' : 'Tap to begin. Your song plays softly beneath.');
+  $('amb').classList.toggle('paused', !rosaryPlaying);
+}
+var seeking = false;
+function seekTo(v) {
+  if (!isFree()) return;
+  var T = timeline(SETS[curSet].first); v = Math.max(0, Math.min(T.total - 0.2, v));
+  rState().pos = v;
+  if (voice.readyState >= 1) { try { voice.currentTime = v; } catch (e) {} }
+  lastIdx = -1; renderRosary(true);
+}
+$('r-seek').addEventListener('input', function () { seeking = true; seekTo(+this.value); });
+$('r-seek').addEventListener('change', function () { seeking = false; seekTo(+this.value); save(); });
+$('r-beads').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-bead]'); if (!b || !isFree()) return;
+  var dec = +this.getAttribute('data-dec'), n = +b.getAttribute('data-bead'), tl = timeline(SETS[curSet].first).tl;
+  for (var i = 0; i < tl.length; i++) if (tl[i][1] === 4 && tl[i][2] === dec && tl[i][3] === n) { seekTo(tl[i][0]); break; }
+});
+$('r-sets').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-set]'); if (!b || !isFree()) return;
+  var k = b.getAttribute('data-set'); if (k === curSet) return;
+  var r = day().rosary; r.free = { set: k, pos: 0 }; save(true);
+  loadRosary(); renderRosary(true);
+});
+
+// ---------------- sign of the cross: a brush stroke ----------------
+// Timed to the recording: the stroke falls on "Father … Son", crosses on "Holy Spirit", fades after "Amen".
+var FX = {
+  1: { v0: 0.55, v1: 2.15, h0: 2.7, h1: 3.75, fade: 4.5 },
+  5: { v0: 1.4, v1: 2.55, h0: 2.85, h1: 3.7, fade: 4.2 }
+};
+var FX_DE = {
+  1: { v0: 0.35, v1: 1.3, h0: 1.4, h1: 2.95, fade: 3.4 },
+  5: { v0: 0.4, v1: 1.3, h0: 1.35, h1: 2.75, fade: 3.1 }
+};
+var FADE_IN = 0.6, FADE_LEN = 2.4, fxOn = false, reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function easeInOut(x) { x = Math.max(0, Math.min(1, x)); return 0.5 - 0.5 * Math.cos(Math.PI * x); }
+function currentSign(t) {
+  if (!curSet) return null;
+  var tl = timeline(SETS[curSet].first).tl, hit = null;
+  var fx = lang() === 'de' ? FX_DE : FX;
+  for (var i = 0; i < tl.length && tl[i][0] <= t + 0.02; i++) if (fx[tl[i][1]]) hit = tl[i];
+  if (!hit) return null;
+  var k = fx[hit[1]], lt = t - hit[0];
+  return lt >= k.v0 - 0.05 && lt <= k.fade + FADE_LEN ? { k: k, lt: lt } : null;
+}
+function startFx() { if (!fxOn) { fxOn = true; requestAnimationFrame(fxFrame); } }
+// fixed bristle pattern so the stroke looks the same every frame
+var BR = (function () { var r = rng(17), a = []; for (var i = 0; i < 13; i++) a.push({ o: -0.92 + 1.84 * i / 12 + (r() - 0.5) * 0.08, f: 9 + r() * 14, ph: r() * 6.28, end: 0.72 + r() * 0.28, a: 0.35 + r() * 0.5 }); return a; })();
+function brush(g, x1, y1, x2, y2, prog, alpha, maxW, glow, core) {
+  if (prog <= 0.001) return;
+  var L = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / L, uy = (y2 - y1) / L, nx = -uy, ny = ux;
+  function w(s) { return maxW * (s < 0.06 ? 0.55 + 7.5 * s : 1 - 0.78 * Math.pow((s - 0.06) / 0.94, 2.2)); }
+  var N = Math.max(2, Math.round(60 * prog)), i, s, px, py, hw;
+  // body of the stroke
+  var L1 = [], R1 = [];
+  for (i = 0; i <= N; i++) { s = prog * i / N; px = x1 + ux * L * s; py = y1 + uy * L * s; hw = w(s) / 2; L1.push([px + nx * hw, py + ny * hw]); R1.push([px - nx * hw, py - ny * hw]); }
+  g.globalAlpha = 0.42 * alpha; g.fillStyle = glow; g.shadowColor = glow; g.shadowBlur = 14;
+  g.beginPath(); g.moveTo(L1[0][0], L1[0][1]); L1.forEach(function (p) { g.lineTo(p[0], p[1]); });
+  for (i = R1.length - 1; i >= 0; i--) g.lineTo(R1[i][0], R1[i][1]); g.closePath(); g.fill();
+  // bristle streaks: brighter threads that thin out and break near the end, like a dry brush
+  g.shadowBlur = 0; g.lineWidth = 1.1; g.strokeStyle = core;
+  BR.forEach(function (b) {
+    g.beginPath(); var pen = false;
+    for (i = 0; i <= N; i++) {
+      s = prog * i / N;
+      var on = s < b.end && (0.5 + 0.5 * Math.sin(s * b.f + b.ph)) > 0.18;
+      px = x1 + ux * L * s + nx * b.o * w(s) / 2; py = y1 + uy * L * s + ny * b.o * w(s) / 2;
+      if (on) { if (!pen) { g.moveTo(px, py); pen = true; } else g.lineTo(px, py); } else pen = false;
+    }
+    g.globalAlpha = b.a * 0.55 * alpha; g.stroke();
+  });
+}
+// ---------------- rosary ring (optional view) ----------------
+// 59 beads: pendant (cross, Our Father bead, three Hail Marys) and a loop of five decades
+// travelled counter-clockwise from the centrepiece: decades 1–2 up the right, 3 across the top, 4–5 down the left.
+var ringGeo = null;
+function nodeOf(clip, dec, bead) {
+  // position along the bead path (0 = cross … 60 = centrepiece again … 65 = cross)
+  function db(d, b) { return 6 + (d - 1) * 11 + (b - 1); }
+  if (dec === 0) {
+    if (clip === 1 || clip === 2) return 0;
+    if (clip === 3) return 1;
+    if (clip === 4) return 1 + bead;
+    if (clip === 5 || clip === 6) return 4.5;
+  }
+  if (dec >= 1 && dec <= 5) {
+    var big = dec === 1 ? 5 : db(dec, 1) - 1;
+    if (clip >= 9) return big - 0.3;
+    if (clip === 3) return big;
+    if (clip === 4) return db(dec, bead);
+    if (clip === 5) return db(dec, 10) + 0.4;
+    if (clip === 6) return db(dec, 10) + 0.65;
+  }
+  if (dec === 6) {
+    if (clip === 7) return 60;
+    if (clip === 8) return 62.5;
+    if (clip === 1) return 65;
+  }
+  return 0;
+}
+function ringProgress(t) {
+  var T = timeline(SETS[curSet].first), tl = T.tl, i = rIdx(tl, t);
+  if (t < tl[0][0]) return 0;
+  var e = tl[i], n1 = nodeOf(e[1], e[2], e[3]), n0 = i ? nodeOf(tl[i - 1][1], tl[i - 1][2], tl[i - 1][3]) : 0;
+  var d = e[5], f = Math.max(0, Math.min(1, (t - e[0]) / d));
+  if (t >= T.total - 0.3) return 65;
+  return n0 + (n1 - n0) * f;
+}
+function buildRingGeo(W, H) {
+  var m = 12, R = 48, x0 = m, x1 = W - m, y0 = m, y1 = H - 42;   // loop box; pendant hangs below y1
+  var cx = W / 2;
+  // rounded rectangle sampled counter-clockwise from bottom centre
+  var pts = [], seg = function (x, y) { pts.push([x, y]); };
+  var k, a;
+  for (x = cx; x <= x1 - R; x += 2) seg(x, y1);
+  for (k = 0; k <= 16; k++) { a = Math.PI / 2 - k / 16 * Math.PI / 2; seg(x1 - R + R * Math.cos(a), y1 - R + R * Math.sin(a)); }
+  for (y = y1 - R; y >= y0 + R; y -= 2) seg(x1, y);
+  for (k = 0; k <= 16; k++) { a = -k / 16 * Math.PI / 2; seg(x1 - R + R * Math.cos(a), y0 + R + R * Math.sin(a)); }
+  for (x = x1 - R; x >= x0 + R; x -= 2) seg(x, y0);
+  for (k = 0; k <= 16; k++) { a = -Math.PI / 2 - k / 16 * Math.PI / 2; seg(x0 + R + R * Math.cos(a), y0 + R + R * Math.sin(a)); }
+  for (y = y0 + R; y <= y1 - R; y += 2) seg(x0, y);
+  for (k = 0; k <= 16; k++) { a = Math.PI - k / 16 * Math.PI / 2; seg(x0 + R + R * Math.cos(a), y1 - R + R * Math.sin(a)); }
+  for (x = x0 + R; x <= cx; x += 2) seg(x, y1);
+  var x, y, cum = [0];
+  for (k = 1; k < pts.length; k++) cum.push(cum[k - 1] + Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]));
+  function at(s) { var lo = 0, hi = cum.length - 1; while (hi - lo > 1) { var md = (lo + hi) >> 1; if (cum[md] < s) lo = md; else hi = md; } var f = (s - cum[lo]) / ((cum[hi] - cum[lo]) || 1); return [pts[lo][0] + (pts[hi][0] - pts[lo][0]) * f, pts[lo][1] + (pts[hi][1] - pts[lo][1]) * f]; }
+  function sOf(px, py) { var b = 0, bd = 1e9; for (var j = 0; j < pts.length; j++) { var dd = Math.hypot(pts[j][0] - px, pts[j][1] - py); if (dd < bd) { bd = dd; b = j; } } return cum[b]; }
+  var Pn = cum[cum.length - 1];
+  // straight runs: right side, top, left side
+  var rA = sOf(x1, y1 - R), rB = sOf(x1, y0 + R), tA = sOf(x1 - R, y0), tB = sOf(x0 + R, y0), lA = sOf(x0, y0 + R), lB = sOf(x0, y1 - R);
+  function spread(sA, sB, kinds) {   // kinds: 's' small bead, 'L' large bead; large beads get extra room
+    var w = kinds.map(function (k) { return k === 'L' ? 1.9 : 1; }), tot = w.reduce(function (a, b) { return a + b; }, 0), out = [], acc = 0;
+    kinds.forEach(function (k, i) { acc += w[i] / 2; out.push([sA + (sB - sA) * acc / tot, k]); acc += w[i] / 2; });
+    return out;
+  }
+  var dec = 'ssssssssss'.split(''), kinds = [];
+  for (var dd = 1; dd <= 5; dd++) { if (dd > 1) kinds.push('L'); kinds = kinds.concat(dec); }
+  var loop = spread(rA - 6, lB + 6, kinds);   // d1 L2 d2 L3 d3 L4 d4 L5 d5, evenly around the loop
+  var N = [];
+  var medal = [cx, y1];
+  // pendant, from the cross upward
+  N[0] = { p: [cx, y1 + 86], k: 'cross' };
+  N[1] = { p: [cx, y1 + 66], k: 'L' };
+  N[2] = { p: [cx, y1 + 51], k: 's' }; N[3] = { p: [cx, y1 + 38], k: 's' }; N[4] = { p: [cx, y1 + 25], k: 's' };
+  N[5] = { p: medal, k: 'medal' };
+  loop.forEach(function (b, i) { N[6 + i] = { p: at(b[0]), k: b[1], s: b[0] }; });
+  N[60] = { p: medal, k: 'medal' };
+  N[61] = { p: N[4].p, k: 'ret' }; N[62] = { p: N[3].p, k: 'ret' }; N[63] = { p: N[2].p, k: 'ret' }; N[64] = { p: N[1].p, k: 'ret' }; N[65] = { p: N[0].p, k: 'ret' };
+  return { W: W, H: H, N: N, at: at, Pn: Pn, cum: cum, pts: pts };
+}
+function pathPoints(g, upto) {
+  // polyline of the string up to fractional node `upto`, following the loop curve between beads
+  var N = g.N, out = [N[0].p], last = Math.floor(upto), f = upto - last;
+  function sAt(n) { return n === 5 ? 0 : n === 60 ? g.Pn : N[n].s; }
+  function addSeg(a, b, frac) {
+    if (a >= 5 && b <= 60 && b > a) {     // along the loop: sample the curve
+      var s0 = sAt(a), s1 = sAt(b), steps = Math.max(2, Math.ceil(Math.abs(s1 - s0) / 4));
+      for (var j = 1; j <= steps; j++) { var u = j / steps; if (u > frac) { out.push(g.at(s0 + (s1 - s0) * frac)); return; } out.push(g.at(s0 + (s1 - s0) * u)); }
+    } else {
+      var p = N[a].p, q = N[b].p; out.push([p[0] + (q[0] - p[0]) * frac, p[1] + (q[1] - p[1]) * frac]);
+    }
+  }
+  for (var n = 0; n < last && n < 65; n++) addSeg(n, n + 1, 1);
+  if (last < 65 && f > 0) addSeg(last, last + 1, f);
+  return out;
+}
+function drawRing(g, ox, oy, W, H, prog, glow, beadCol, now) {
+  if (!ringGeo || ringGeo.W !== W || ringGeo.H !== H) ringGeo = buildRingGeo(W, H);
+  var G = ringGeo, N = G.N, cs = getComputedStyle(document.documentElement), faint = cs.getPropertyValue('--faint').trim(), bg = cs.getPropertyValue('--bg').trim();
+  g.save(); g.translate(ox, oy);
+  // the bare cord
+  g.globalAlpha = 0.55; g.strokeStyle = faint; g.lineWidth = 1;
+  g.beginPath(); G.pts.forEach(function (p, i) { i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); }); g.stroke();
+  g.beginPath(); g.moveTo(N[5].p[0], N[5].p[1]); g.lineTo(N[0].p[0], N[0].p[1]); g.stroke();
+  // the glowing fill
+  if (prog > 0) {
+    var pp = pathPoints(G, prog);
+    g.globalAlpha = 1; g.strokeStyle = glow; g.shadowColor = glow; g.shadowBlur = 10; g.lineWidth = 2; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.beginPath(); pp.forEach(function (p, i) { i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); }); g.stroke();
+    g.shadowBlur = 0;
+  }
+  // beads
+  var cur = Math.min(65, Math.floor(prog + 1e-6) + (prog % 1 > 1e-6 ? 1 : 0));
+  var pulse = 0.5 + 0.5 * Math.sin(now / 420);
+  for (var n = 0; n <= 60; n++) {
+    var b = N[n]; if (!b || b.k === 'ret') continue;
+    var lit = prog >= n - 1e-6 || (n === 0 && prog > 0) || (n === 5 && prog >= 60), isCur = n === cur && !lit;
+    var x = b.p[0], y = b.p[1];
+    if (n === 60) continue;
+    g.globalAlpha = 1;
+    if (b.k === 'cross') {
+      g.fillStyle = (lit || prog >= 65) ? beadCol : bg; g.strokeStyle = (lit || prog >= 65) ? beadCol : faint; g.lineWidth = 1.2;
+      if (lit || prog >= 65) { g.shadowColor = glow; g.shadowBlur = 10; }
+      g.beginPath(); g.rect(x - 2, y - 11, 4, 22); g.rect(x - 7.5, y - 6, 15, 4); g.fill(); g.stroke(); g.shadowBlur = 0;
+      continue;
+    }
+    var r = b.k === 'L' ? 5.2 : b.k === 'medal' ? 6.5 : 3.6;
+    if (isCur) { g.shadowColor = glow; g.shadowBlur = 6 + 8 * pulse; g.fillStyle = cs.getPropertyValue('--ink').trim(); g.globalAlpha = 0.65 + 0.35 * pulse; }
+    else if (lit) { g.shadowColor = glow; g.shadowBlur = 8; g.fillStyle = beadCol; }
+    else { g.shadowBlur = 0; g.fillStyle = bg; }
+    g.beginPath();
+    if (b.k === 'medal') { g.ellipse(x, y, r * 0.8, r * 1.15, 0, 0, Math.PI * 2); } else g.arc(x, y, r, 0, Math.PI * 2);
+    g.fill(); g.shadowBlur = 0; g.globalAlpha = 1;
+    if (!lit && !isCur) { g.strokeStyle = faint; g.lineWidth = 1; g.stroke(); }
+  }
+  g.restore();
+}
+// tap a bead on the ring (free prayer only) to jump there
+function ringNodeTime(node) {
+  var tl = timeline(SETS[curSet].first).tl;
+  for (var i = 0; i < tl.length; i++) if (Math.abs(nodeOf(tl[i][1], tl[i][2], tl[i][3]) - node) < 1e-6) return tl[i][0];
+  return null;
+}
+$('rosary').addEventListener('click', function (ev) {
+  if (!S.ring || !isFree() || !ringGeo || ev.target.closest('button,input,a')) return;
+  var wr = $('r-wrap').getBoundingClientRect(), x = ev.clientX - wr.left, y = ev.clientY - wr.top, best = -1, bd = 18;
+  ringGeo.N.forEach(function (b, n) { if (!b || b.k === 'ret' || n === 60) return; var d = Math.hypot(b.p[0] - x, b.p[1] - y); if (d < bd) { bd = d; best = n; } });
+  if (best < 0) return;
+  var t = ringNodeTime(best === 0 ? 0 : best); if (t != null) seekTo(t);
+});
+function applyRing() {
+  $('rosary').classList.toggle('ring', !!S.ring);
+  $('r-ring').setAttribute('aria-pressed', String(!!S.ring));
+  ringGeo = null; lastIdx = -1;
+  if (current === 'rosary') renderRosary(true);
+}
+$('r-ring').addEventListener('click', function () { S.ring = !S.ring; save(true); applyRing(); });
+
+function fxFrame() {
+  if (current !== 'rosary') { fxOn = false; return; }
+  var cv = $('r-fx'), dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  var g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  if (S.ring && curSet) {
+    var cr = cv.getBoundingClientRect(), wr = $('r-wrap').getBoundingClientRect(), cs0 = getComputedStyle(document.documentElement);
+    drawRing(g, wr.left - cr.left, wr.top - cr.top, wr.width, wr.height, ringProgress(rTime()), cs0.getPropertyValue('--spark').trim(), cs0.getPropertyValue('--bead').trim(), performance.now());
+  }
+  var sg = currentSign(rTime());
+  if (sg) {
+    var cs = getComputedStyle(document.documentElement), glow = cs.getPropertyValue('--spark').trim() || '#F2A24A';
+    var core = S.theme === 'teutonic' ? '#FFFFFF' : '#FFF3C4';
+    var k = sg.k, lt = sg.lt;
+    if (reduceMotion) lt = Math.max(lt, k.h1);
+    var alpha = lt < k.fade ? 1 : Math.max(0, 1 - (lt - k.fade) / FADE_LEN);
+    g.globalCompositeOperation = 'lighter';
+    var cx = W / 2, top = H * 0.17, bot = H * 0.68, yh = H * 0.34, left = W * 0.14, right = W * 0.86;
+    // each stroke glides in with an even, unhurried pace and fades up from nothing as it begins
+    var vin = Math.max(0, Math.min(1, (lt - k.v0) / FADE_IN)), hin = Math.max(0, Math.min(1, (lt - k.h0) / FADE_IN));
+    brush(g, cx, top, cx, bot, easeInOut((lt - k.v0) / (k.v1 - k.v0)), alpha * vin * vin, 15, glow, core);
+    brush(g, left, yh, right, yh, easeInOut((lt - k.h0) / (k.h1 - k.h0)), alpha * hin * hin, 13, glow, core);
+    g.globalAlpha = 1; g.shadowBlur = 0; g.globalCompositeOperation = 'source-over';
+  }
+  requestAnimationFrame(fxFrame);
+}
+
+function playRosary() {
+  var r = rState(), free = isFree();
+  ensureAudio();
+  if (music.paused) playMusic(false);
+  var T = timeline(SETS[curSet].first);
+  if (free && r.pos >= T.total - 0.5) r.pos = 0;
+  var seek = function () { try { if (Math.abs(voice.currentTime - r.pos) > 1) voice.currentTime = r.pos; } catch (e) {} };
+  if (voice.readyState >= 1) seek(); else voice.addEventListener('loadedmetadata', seek, { once: true });
+  rosaryPlaying = true;
+  // play() must run inside the tap itself, or iOS blocks it
+  var p = voice.play();
+  if (p && p.catch) p.catch(function () { rosaryPlaying = false; applyLevels(); renderRosaryControls(); });
+  applyLevels(); renderRosaryControls();
+}
+function pauseRosary() {
+  try { voice.pause(); } catch (e) {}
+  rosaryPlaying = false;
+  var r = rState(); r.pos = voice.currentTime || r.pos; save(true);
+  applyLevels(); renderRosaryControls();
+}
+$('r-play').addEventListener('click', function () { rosaryPlaying ? pauseRosary() : playRosary(); });
+voice.addEventListener('timeupdate', function () {
+  if (!rosaryPlaying) return;
+  var r = rState();
+  if (isFree()) r.pos = voice.currentTime;
+  else if (voice.currentTime > r.pos) r.pos = voice.currentTime;   // the daily count only moves forward
+  if (Date.now() - lastSaved > 10000) { lastSaved = Date.now(); save(); }
+  if (current === 'rosary') renderRosary();
+});
+voice.addEventListener('ended', function () {
+  var r = day().rosary;
+  if (r.done) { r.extra = (r.extra || 0) + 1; rState().pos = 0; }
+  else { r.done = true; r.pos = timeline(SETS[curSet].first).total; r.free = { set: setKey(), pos: 0 }; }
+  rosaryPlaying = false; applyLevels(); save(true); loadRosary(); lastIdx = -1; renderRosary(true); renderHome();
+});
+voice.addEventListener('pause', function () { if (rosaryPlaying && !voice.ended) { rosaryPlaying = false; rState().pos = voice.currentTime; save(true); applyLevels(); renderRosaryControls(); } });
+
+// ---------------- training ----------------
+var openEx = null;
+function renderTraining() {
+  var d = day(), h = '';
+  $('t-total').textContent = '+' + earned() + ' min';
+  var wk = weekSummary(weekStart(todayKey));
+  $('t-week').innerHTML = EXERCISES.map(function (e) {
+    return '<div class="stat"><span>' + e.name + '</span><span>' + fmtQty(e.k, wk.totals[e.k]) + '</span></div>';
+  }).join('') + '<div class="stat"><span>Days trained</span><span>' + wk.daysTrained + ' of ' + wk.elapsed + '</span></div><div class="stat"><span>Minutes earned</span><span>' + wk.minutes + '</span></div>';
+  EXERCISES.forEach(function (e) {
+    var q = d.train[e.k], mins = minutesFor(e.k, q);
+    var have = e.k === 'run' ? (Math.round(q * 10) / 10) + ' mi' : e.k === 'swim' ? q + ' yd' : q + ' reps';
+    var per = e.k === 'run' ? '1 mi' : e.k === 'swim' ? '500 yd' : e.unit + ' reps';
+    h += '<div><div class="row"><span class="main"><b>' + e.name + '</b><span>' + have + ' · 10 min per ' + per + '</span></span>' +
+      '<span class="earn">+' + mins + '</span>' +
+      '<button class="add" data-ex="' + e.k + '" aria-label="Log ' + e.name + '" aria-expanded="' + (openEx === e.k) + '"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>';
+    if (openEx === e.k) {
+      h += '<div style="padding-bottom:12px;border-bottom:1px solid var(--line)"><div class="chips">' +
+        e.chips.map(function (c) { return '<button class="chip" data-quick="' + c + '">+' + c + (e.word ? ' ' + e.word : '') + '</button>'; }).join('') +
+        '</div><form class="entry" id="t-form"><label class="sr" for="t-in">Amount</label><input id="t-in" type="number" inputmode="decimal" min="0" step="' + e.step + '" placeholder="Amount (' + e.src + ')"><button class="btn" type="submit">ADD</button></form></div>';
+    }
+    h += '</div>';
+  });
+  $('t-rows').innerHTML = h;
+  var log = d.log.slice(-4).reverse();
+  $('t-log').innerHTML = log.length ? log.map(function (l, i) {
+    var e = EXERCISES.filter(function (x) { return x.k === l.k; })[0];
+    return '<div style="display:flex;justify-content:space-between;align-items:center;min-height:36px"><span>' + l.time + ' · ' + e.name + ' +' + l.q + (e.word ? ' ' + e.word : '') + '</span>' + (i === 0 ? '<button class="chip" id="t-undo">UNDO</button>' : '') + '</div>';
+  }).join('') : '';
+  var f = $('t-form');
+  if (f) f.addEventListener('submit', function (ev) { ev.preventDefault(); addEx(openEx, parseFloat($('t-in').value)); });
+}
+function addEx(k, q) {
+  if (!k || !(q > 0)) return;
+  var d = day(); d.train[k] = Math.round((d.train[k] + q) * 100) / 100;
+  var n = new Date(); d.log.push({ k: k, q: q, time: n.getHours() + ':' + String(n.getMinutes()).padStart(2, '0') });
+  openEx = null; save(true); renderTraining();
+}
+$('t-rows').addEventListener('click', function (ev) {
+  var a = ev.target.closest('[data-ex]'); if (a) { var k = a.getAttribute('data-ex'); openEx = openEx === k ? null : k; renderTraining(); if (openEx) { var i = $('t-in'); if (i) i.focus(); } return; }
+  var c = ev.target.closest('[data-quick]'); if (c) addEx(openEx, parseFloat(c.getAttribute('data-quick')));
+});
+$('t-log').addEventListener('click', function (ev) {
+  if (!ev.target.closest('#t-undo')) return;
+  var d = day(), l = d.log.pop(); if (!l) return;
+  d.train[l.k] = Math.max(0, Math.round((d.train[l.k] - l.q) * 100) / 100); save(true); renderTraining();
+});
+
+// ---------------- scripture data ----------------
+var GOSPELS = null, PLAN = null, PSALM = null;
+// each month's psalm trains one of the cardinal virtues
+var VIRTUS = { 143: ['FORTITUDO', 'Fortitude'], 41: ['TEMPERANTIA', 'Temperance'] };
+var PSALM_FILES = { '2026-11': 'data/psalm-2026-11.json', '2026-12': 'data/psalm-2026-12.json' };
+var LATIN_BOOK = { John: 'Ioannes', Matthew: 'Matthæus', Mark: 'Marcus', Luke: 'Lucas' };
+var BIBLE = [["Genesis",50],["Exodus",40],["Leviticus",27],["Numbers",36],["Deuteronomy",34],["Joshua",24],["Judges",21],["Ruth",4],["1 Kings",31],["2 Kings",24],["3 Kings",22],["4 Kings",25],["1 Paralipomenon",29],["2 Paralipomenon",36],["1 Esdras",10],["2 Esdras (Nehemiah)",13],["Tobias",14],["Judith",16],["Esther",16],["Job",42],["Psalms",150],["Proverbs",31],["Ecclesiastes",12],["Canticle of Canticles",8],["Wisdom",19],["Sirach (Ecclesiasticus)",51],["Isaias",66],["Jeremias",52],["Lamentations",5],["Baruch",6],["Ezechiel",48],["Daniel",14],["Osee",14],["Joel",3],["Amos",9],["Abdias",1],["Jonas",4],["Micheas",7],["Nahum",3],["Habacuc",3],["Sophonias",3],["Aggeus",2],["Zacharias",14],["Malachias",4],["1 Machabees",16],["2 Machabees",15],["Matthew",28],["Mark",16],["Luke",24],["John",21],["Acts of Apostles",28],["Romans",16],["1 Corinthians",16],["2 Corinthians",13],["Galatians",6],["Ephesians",6],["Philippians",4],["Colossians",4],["1 Thessalonians",5],["2 Thessalonians",3],["1 Timothy",6],["2 Timothy",4],["Titus",3],["Philemon",1],["Hebrews",13],["James",5],["1 Peter",5],["2 Peter",3],["1 John",5],["2 John",1],["3 John",1],["Jude",1],["Apocalypse",22]];
+var ABBR = ['Gen','Exo','Lev','Num','Deu','Jos','Jdg','Ruth','1 Kg','2 Kg','3 Kg','4 Kg','1 Par','2 Par','1 Esd','2 Esd','Tob','Jdt','Est','Job','Ps','Prv','Eccl','Cant','Wis','Sir','Isa','Jer','Lam','Bar','Ezek','Dan','Os','Joel','Amos','Abd','Jon','Mic','Nah','Hab','Soph','Agg','Zach','Mal','1 Mac','2 Mac',
+            'Mt','Mk','Lk','Jn','Acts','Rom','1 Cor','2 Cor','Gal','Eph','Phil','Col','1 Th','2 Th','1 Tim','2 Tim','Tit','Phlm','Heb','Jas','1 Pt','2 Pt','1 Jn','2 Jn','3 Jn','Jude','Apoc'];
+function bookIndex(name) { for (var i = 0; i < BIBLE.length; i++) if (BIBLE[i][0] === name) return i; return -1; }
+function loadJSON(u) { return fetch(u).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
+function monthKey(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+Promise.all([loadJSON('data/gospels.json'), loadJSON('data/plan.json')]).then(function (r) { GOSPELS = r[0]; PLAN = r[1]; renderAll(); }).catch(function () {});
+(function () {
+  var keys = Object.keys(PSALM_FILES).sort(), mk = monthKey(), pick = keys[0];
+  keys.forEach(function (k) { if (k <= mk) pick = k; });
+  loadJSON(PSALM_FILES[pick]).then(function (p) { PSALM = p; renderAll(); }).catch(function () {});
+})();
+
+function passage() {
+  if (!GOSPELS || !PLAN) return null;
+  var idx = day().mens.p % PLAN.length, pl = PLAN[idx], bk = GOSPELS.books[pl[0]], ch = bk.chapters[pl[1]];
+  var verses = ch.slice(pl[2], pl[3]);
+  return { idx: idx, book: bk.name, chapter: pl[1] + 1, verses: verses, last: pl[3] === ch.length,
+           ref: (LATIN_BOOK[bk.name] || bk.name) + ' ' + (pl[1] + 1) + ':' + verses[0][0] + '–' + verses[verses.length - 1][0] };
+}
+// deterministic pseudo-random from a seed
+function rng(seed) { var s = seed * 9301 + 49297; return function () { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
+function clozeFor(ps) {
+  var r = rng(ps.idx + 7), toks = [];
+  ps.verses.forEach(function (v, vi) { v[1].split(' ').forEach(function (w, wi) { toks.push({ vi: vi, wi: wi, w: w }); }); });
+  var cand = toks.filter(function (t) { return t.w.replace(/[^A-Za-zæœÆŒ]/g, '').length >= 5; });
+  var seen = {}, pick = [];
+  for (var n = 0; n < 60 && pick.length < 3 && cand.length; n++) {
+    var t = cand[Math.floor(r() * cand.length)], k = norm(t.w);
+    if (seen[k] || pick.some(function (p) { return Math.abs(p.vi * 100 + p.wi - (t.vi * 100 + t.wi)) < 3; })) continue;
+    seen[k] = 1; pick.push(t);
+  }
+  pick.sort(function (a, b) { return a.vi - b.vi || a.wi - b.wi; });
+  return pick;
+}
+function transFor(ps) {
+  var v = ps.verses.slice().sort(function (a, b) { return a[1].length - b[1].length; })[0];
+  var dayNo = Math.floor(parseKey(todayKey).getTime() / 864e5);
+  return { v: v, toLatin: dayNo % 2 === 1 };
+}
+function psalmStage() { var d = new Date().getDate(); return d <= 7 ? 1 : d <= 14 ? 2 : d <= 21 ? 3 : 4; }
+var STAGE_NAME = ['', 'WEEK I · FULL TEXT', 'WEEK II · FIRST LETTERS', 'WEEK III · ENGLISH ONLY', 'WEEK IV · FROM MEMORY'];
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+function interlinear(v, stage) {
+  return '<div class="il">' + v.la.map(function (w, i) {
+    var g = esc(v.gl[i]), b;
+    if (stage === 1) b = '<b>' + esc(w) + '</b>';
+    else if (stage === 2) b = '<b>' + esc(w.charAt(0)) + '<span style="color:var(--faint)">' + esc(w.slice(1)).replace(/[A-Za-zæœÆŒ]/g, '·') + '</span></b>';
+    else b = '<b class="blank" style="min-width:' + Math.max(20, w.length * 9) + 'px"></b>';
+    return '<span class="w"><i>' + g + '</i>' + b + '</span>';
+  }).join('') + '</div>';
+}
+
+// ---------------- mens screen ----------------
+var mensTab = null, showEn = false, transRevealed = false, pv = { i: 0, revealed: false, said: 0 }, wholePsalm = false;
+function nextTab() { var m = day().mens; return !m.lectio ? 'lectio' : !m.cloze ? 'cloze' : !m.trans ? 'trans' : 'psalm'; }
+function finishDrill(k) {
+  var m = day().mens;
+  if (!m[k]) { m[k] = true; S.totalDrills = (S.totalDrills || 0) + 1; }
+  if (k === 'lectio') {
+    S.nextPassage = Math.max(S.nextPassage || 0, m.p + 1);
+    var ps = passage();
+    if (ps && ps.last) markChapter(bookIndex(ps.book), ps.chapter, true);
+  }
+  save(true);
+}
+function renderScripture() {
+  var ps = passage(), m = day().mens;
+  $('s-ref').textContent = ps ? ps.ref : 'Loading…';
+  var vt = PSALM && VIRTUS[PSALM.vul];
+  $('s-virtus').textContent = vt ? vt[0] : '';
+  if (vt) $('s-virtus').setAttribute('aria-label', 'Virtue of the month: ' + vt[1]); else $('s-virtus').removeAttribute('aria-label');
+  if (!mensTab) mensTab = nextTab();
+  var tabs = [['lectio', 'LECTIO'], ['cloze', 'COMPLETE'], ['trans', 'TRANSLATE'], ['psalm', 'PSALMUS']];
+  $('s-steps').innerHTML = tabs.map(function (t) {
+    var done = m[t[0]], cur = mensTab === t[0];
+    return '<button data-tab="' + t[0] + '" class="' + (done ? 'done ' : '') + (cur ? 'cur' : '') + '" aria-pressed="' + cur + '">' + (done ? '✓ ' : '') + t[1] + '</button>';
+  }).join('');
+  $('s-count').textContent = mensDone() + ' of 4 kept today · ' + (S.totalDrills || 0) + ' drills kept in all';
+  var h = '';
+  if (!ps && mensTab !== 'psalm') { $('s-drill').innerHTML = '<span class="muted">Loading the text…</span>'; return; }
+  if (mensTab === 'lectio') {
+    h = '<span class="label" style="font-size:11px">LECTIO · READ IT SLOWLY</span>' +
+      ps.verses.map(function (v) { return '<div><p class="lat"><sup>' + v[0] + '</sup>' + esc(v[1]) + '</p>' + (showEn ? '<p class="eng">' + esc(v[2]) + '</p>' : '') + '</div>'; }).join('') +
+      '<button class="btn ghost" id="s-en">' + (showEn ? 'HIDE ENGLISH' : 'SHOW ENGLISH') + '</button>' +
+      (m.lectio ? '<span class="msg ok">Kept.</span>' : '<button class="btn" id="s-read">I HAVE READ IT</button>');
+  } else if (mensTab === 'cloze') {
+    var gaps = clozeFor(ps), gi = 0;
+    h = '<span class="label" style="font-size:11px">COMPLETE · FILL THE GAPS</span>' + ps.verses.map(function (v, vi) {
+      return '<p class="lat"><sup>' + v[0] + '</sup>' + v[1].split(' ').map(function (w, wi) {
+        var g = gaps.filter(function (p) { return p.vi === vi && p.wi === wi; })[0];
+        if (!g) return esc(w);
+        gi++;
+        var core = w.replace(/[^A-Za-zæœÆŒ]+$/, ''), tail = w.slice(core.length);
+        return m.cloze ? '<span class="gap" style="color:var(--ink)">' + esc(core) + '</span>' + esc(tail)
+                       : '<span class="gap">' + gi + ' · ' + esc(core.charAt(0)) + '…</span>' + esc(tail);
+      }).join(' ') + '</p>';
+    }).join('');
+    if (!m.cloze) h += '<div style="display:grid;grid-template-columns:repeat(' + gaps.length + ',minmax(0,1fr));gap:8px">' +
+      gaps.map(function (g, i) { return '<label><span class="sr">Gap ' + (i + 1) + '</span><input type="text" data-gap="' + i + '" placeholder="' + (i + 1) + '" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"></label>'; }).join('') +
+      '</div><span class="msg" id="s-msg"></span><button class="btn" id="s-check">CHECK</button><button class="btn ghost" id="s-reveal" hidden>REVEAL</button>';
+    else h += '<span class="msg ok">Kept.</span>';
+  } else if (mensTab === 'trans') {
+    var tr = transFor(ps), src = tr.toLatin ? tr.v[2] : tr.v[1], ans = tr.toLatin ? tr.v[1] : tr.v[2];
+    h = '<span class="label" style="font-size:11px">TRANSLATE · ' + (tr.toLatin ? 'INTO LATIN' : 'INTO ENGLISH') + ' · VERSE ' + tr.v[0] + '</span>' +
+      '<p class="' + (tr.toLatin ? 'eng' : 'lat') + '" style="font-size:19px">' + esc(src) + '</p>';
+    if (m.trans) h += '<p class="' + (tr.toLatin ? 'lat' : 'eng') + '">' + esc(ans) + '</p><span class="msg ok">Kept.</span>';
+    else if (!transRevealed) h += '<label class="sr" for="s-a">Your translation</label><textarea id="s-a" placeholder="' + (tr.toLatin ? 'Write it in Latin' : 'Write it in English') + '"></textarea><button class="btn" id="s-tshow">REVEAL THE REFERENCE</button>';
+    else h += '<span class="label" style="font-size:11px">' + (tr.toLatin ? 'VULGATE' : 'DOUAY-RHEIMS') + '</span><p class="' + (tr.toLatin ? 'lat' : 'eng') + '" style="font-size:18px">' + esc(ans) + '</p>' +
+      '<span class="muted" style="font-size:15px">Judge yourself honestly: is the sense right?</span><div class="row2"><button class="btn" id="s-tok">KEPT</button><button class="btn ghost" id="s-tagain">TRY AGAIN</button></div>';
+  } else {
+    if (!PSALM) { $('s-drill').innerHTML = '<span class="muted">Loading the psalm…</span>'; return; }
+    var st = psalmStage(), vs = PSALM.verses;
+    h = '<span class="cz" style="font-size:16px;letter-spacing:1px">Psalmus ' + PSALM.vul + ' (' + PSALM.heb + ') · ' + esc(PSALM.incipit) + '</span>' +
+      '<span class="label" style="font-size:11px">' + STAGE_NAME[st] + '</span>';
+    if (wholePsalm) {
+      h += vs.map(function (v) { return '<div><span class="label" style="font-size:10px">' + v.n + '</span>' + interlinear(v, 1) + '<p class="eng">' + esc(v.en) + '</p></div>'; }).join('') +
+        '<button class="btn ghost" id="s-whole">BACK TO RECITATION</button>';
+    } else if (m.psalm && pv.i >= vs.length) {
+      h += '<span class="msg ok">Kept. ' + pv.said + ' of ' + vs.length + ' verses said cleanly.</span><button class="btn ghost" id="s-whole">READ THE WHOLE PSALM</button>';
+    } else if (m.psalm) {
+      h += '<span class="msg ok">Kept for today.</span><button class="btn ghost" id="s-again">RECITE AGAIN</button><button class="btn ghost" id="s-whole">READ THE WHOLE PSALM</button>';
+    } else {
+      var v = vs[pv.i];
+      h += '<span class="label" style="font-size:11px">' + (pv.i + 1) + ' OF ' + vs.length + ' · VERSE ' + v.n + '</span>' +
+        (pv.revealed ? interlinear(v, 1) : (st === 4 ? '<p class="it muted" style="font-size:18px;margin:0">Recite verse ' + v.n + ' aloud from memory.</p>' : interlinear(v, st))) +
+        (pv.revealed ? '<div class="row2"><button class="btn" id="s-said">SAID IT</button><button class="btn ghost" id="s-miss">MISSED</button></div>'
+                     : '<span class="muted" style="font-size:15px">Say the verse aloud, then reveal it to check.</span><button class="btn" id="s-pshow">REVEAL</button>') +
+        '<button class="btn ghost" id="s-whole">READ THE WHOLE PSALM</button>';
+    }
+  }
+  $('s-drill').innerHTML = h;
+}
+$('s-steps').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-tab]'); if (!b) return;
+  mensTab = b.getAttribute('data-tab'); transRevealed = false; wholePsalm = false; renderScripture();
+});
+$('s-drill').addEventListener('click', function (ev) {
+  var t = ev.target, m = day().mens, ps = passage();
+  if (t.closest('#s-en')) { showEn = !showEn; renderScripture(); return; }
+  if (t.closest('#s-read')) { finishDrill('lectio'); mensTab = nextTab(); renderScripture(); return; }
+  if (t.closest('#s-check')) {
+    var gaps = clozeFor(ps), ok = true;
+    gaps.forEach(function (g, i) {
+      var inp = document.querySelector('[data-gap="' + i + '"]'), good = norm(inp.value) === norm(g.w);
+      inp.style.borderColor = good ? 'var(--accent)' : 'var(--faint)'; if (!good) ok = false;
+    });
+    if (ok) { finishDrill('cloze'); renderScripture(); }
+    else { $('s-msg').className = 'msg no'; $('s-msg').textContent = 'Not yet. Look again.'; $('s-reveal').hidden = false; }
+    return;
+  }
+  if (t.closest('#s-reveal')) { $('s-msg').className = 'msg no'; $('s-msg').textContent = clozeFor(ps).map(function (g, i) { return (i + 1) + ': ' + g.w.replace(/[^A-Za-zæœÆŒ]+$/, ''); }).join(' · ') + ' — type them to keep it.'; return; }
+  if (t.closest('#s-tshow')) { transRevealed = true; renderScripture(); return; }
+  if (t.closest('#s-tok')) { finishDrill('trans'); transRevealed = false; mensTab = nextTab(); renderScripture(); return; }
+  if (t.closest('#s-tagain')) { transRevealed = false; renderScripture(); return; }
+  if (t.closest('#s-whole')) { wholePsalm = !wholePsalm; renderScripture(); return; }
+  if (t.closest('#s-again')) { m.psalm = false; pv = { i: 0, revealed: false, said: 0 }; renderScripture(); return; }
+  if (t.closest('#s-pshow')) { pv.revealed = true; renderScripture(); return; }
+  if (t.closest('#s-said') || t.closest('#s-miss')) {
+    if (t.closest('#s-said')) pv.said++;
+    pv.i++; pv.revealed = false;
+    if (pv.i >= PSALM.verses.length) finishDrill('psalm');
+    renderScripture(); return;
+  }
+});
+
+// ---------------- bible grid ----------------
+function markChapter(bi, ch, on) {
+  if (bi < 0) return;
+  var a = S.chapters[bi] || [], has = a.indexOf(ch) >= 0;
+  if (on && !has) a.push(ch); if (!on && has) a.splice(a.indexOf(ch), 1);
+  S.chapters[bi] = a;
+}
+function bibleStats() {
+  var books = 0, ch = 0;
+  BIBLE.forEach(function (b, i) { var n = (S.chapters[i] || []).length; ch += n; if (n >= b[1]) books++; });
+  return { books: books, ch: ch };
+}
+function renderBible() {
+  var st = bibleStats();
+  $('b-books').textContent = st.books + ' / 73';
+  $('b-ch').textContent = st.ch + ' of 1,334 chapters read · ' + (1334 - st.ch) + ' to go';
+  function tile(i) {
+    var n = (S.chapters[i] || []).length, tot = BIBLE[i][1], done = n >= tot;
+    return '<button class="bk' + (done ? ' done' : '') + '" data-book="' + i + '" aria-label="' + BIBLE[i][0] + ': ' + n + ' of ' + tot + ' chapters"><i class="fill" style="height:' + Math.round(n / tot * 100) + '%"></i><span>' + ABBR[i] + '</span></button>';
+  }
+  var ot = '', nt = '';
+  for (var i = 0; i < 46; i++) ot += tile(i);
+  for (var j = 46; j < 73; j++) nt += tile(j);
+  $('b-ot').innerHTML = ot; $('b-nt').innerHTML = nt;
+}
+var bookOpen = 0;
+function renderBook() {
+  var b = BIBLE[bookOpen], read = S.chapters[bookOpen] || [];
+  $('k-name').textContent = b[0];
+  $('k-sum').textContent = read.length + ' of ' + b[1] + ' chapters read';
+  var h = '';
+  for (var c = 1; c <= b[1]; c++) h += '<button class="chb" data-ch="' + c + '" aria-pressed="' + (read.indexOf(c) >= 0) + '">' + c + '</button>';
+  $('k-grid').innerHTML = h;
+}
+document.addEventListener('click', function (ev) { var b = ev.target.closest('[data-book]'); if (b) { bookOpen = +b.getAttribute('data-book'); go('book'); } });
+$('k-grid').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-ch]'); if (!b) return;
+  var c = +b.getAttribute('data-ch'); markChapter(bookOpen, c, b.getAttribute('aria-pressed') !== 'true'); save(); renderBook();
+});
+$('k-all').addEventListener('click', function () { var a = []; for (var c = 1; c <= BIBLE[bookOpen][1]; c++) a.push(c); S.chapters[bookOpen] = a; save(true); renderBook(); });
+$('k-none').addEventListener('click', function () { S.chapters[bookOpen] = []; save(true); renderBook(); });
+
+// ---------------- confession ----------------
+var confAsk = false;
+function agoText(k) {
+  var n = Math.round((parseKey(todayKey) - parseKey(k)) / 864e5);
+  return n === 0 ? 'today' : n === 1 ? 'yesterday' : n + ' days ago';
+}
+function longDate(k) { return parseKey(k).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); }
+function renderConfession() {
+  var list = S.confessions.slice().sort().reverse();
+  $('c-last').textContent = list.length ? agoText(list[0]).replace(/^\w/, function (c) { return c.toUpperCase(); }) : 'None logged';
+  $('c-date').textContent = list.length ? longDate(list[0]) : '';
+  var today = S.confessions.indexOf(todayKey) >= 0;
+  $('c-act').innerHTML = today ? '<span class="msg ok" style="display:block;text-align:center">Logged for today.</span>'
+    : confAsk ? '<div style="display:flex;flex-direction:column;gap:8px"><span style="text-align:center;font-size:17px">Log a confession for today?</span><div class="row2"><button class="btn" id="c-yes">LOG IT</button><button class="btn ghost" id="c-no">CANCEL</button></div></div>'
+    : '<button class="btn" id="c-log">CONFESSION MADE TODAY</button>';
+  $('c-list').innerHTML = list.length ? list.map(function (k) { return '<div class="conf"><span>' + longDate(k) + '</span><button class="chip" data-unconf="' + k + '" aria-label="Remove ' + longDate(k) + '">REMOVE</button></div>'; }).join('') : '<span class="muted" style="display:block;padding:12px 0">No confessions logged yet.</span>';
+}
+$('c-act').addEventListener('click', function (ev) {
+  if (ev.target.closest('#c-log')) { confAsk = true; renderConfession(); }
+  else if (ev.target.closest('#c-no')) { confAsk = false; renderConfession(); }
+  else if (ev.target.closest('#c-yes')) { confAsk = false; if (S.confessions.indexOf(todayKey) < 0) S.confessions.push(todayKey); save(true); renderConfession(); }
+});
+$('c-list').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-unconf]'); if (!b) return;
+  var k = b.getAttribute('data-unconf');
+  if (b.getAttribute('data-sure')) { S.confessions = S.confessions.filter(function (x) { return x !== k; }); save(true); renderConfession(); }
+  else { b.setAttribute('data-sure', '1'); b.textContent = 'TAP TO CONFIRM'; }
+});
+
+// ---------------- weekly corpus ----------------
+function addDays(k, n) { var d = parseKey(k); d.setDate(d.getDate() + n); return dkey(d); }
+function weekStart(k) { var d = parseKey(k); d.setDate(d.getDate() - d.getDay()); return dkey(d); }
+function fmtQty(k, q) { q = q || 0; return k === 'run' ? (Math.round(q * 10) / 10) + ' mi' : k === 'swim' ? q + ' yd' : q + ' reps'; }
+function weekSummary(start) {
+  var totals = { run: 0, swim: 0, pull: 0, push: 0, squat: 0 }, minutes = 0, daysTrained = 0, best = null, elapsed = 0, any = false;
+  for (var i = 0; i < 7; i++) {
+    var k = addDays(start, i);
+    if (k <= todayKey) elapsed++;
+    var d = S.days[k]; if (!d) continue; any = true;
+    var m = earnedFor(d.train), trained = false;
+    EXERCISES.forEach(function (e) { totals[e.k] = Math.round((totals[e.k] + (d.train[e.k] || 0)) * 100) / 100; if (d.train[e.k] > 0) trained = true; });
+    minutes += m; if (trained) daysTrained++;
+    if (m > 0 && (!best || m > best.m)) best = { k: k, m: m };
+  }
+  if (!any && S.weeks[start]) return S.weeks[start];
+  return { start: start, totals: totals, minutes: minutes, daysTrained: daysTrained, best: best, elapsed: elapsed };
+}
+function archiveWeeks() {
+  var cur = weekStart(todayKey), changed = false;
+  Object.keys(S.days).forEach(function (k) {
+    var ws = weekStart(k);
+    if (ws < cur && !S.weeks[ws]) { var w = weekSummary(ws); delete w.elapsed; S.weeks[ws] = w; changed = true; }
+  });
+  if (changed) save();
+}
+function rangeText(ws) {
+  var a = parseKey(ws), b = parseKey(addDays(ws, 6)), o = { day: 'numeric', month: 'short' };
+  return a.toLocaleDateString(undefined, o) + ' – ' + b.toLocaleDateString(undefined, o);
+}
+function renderReport() {
+  archiveWeeks();
+  var lw = addDays(weekStart(todayKey), -7), pw = addDays(lw, -7);
+  var a = S.weeks[lw] || weekSummary(lw), b = S.weeks[pw] || weekSummary(pw);
+  function diff(x, y, k) { var d = Math.round((x - y) * 10) / 10; if (!d) return ''; return ' <span class="' + (d > 0 ? 'up' : '') + '">' + (d > 0 ? '+' : '') + (k ? fmtQty(k, d) : d) + '</span>'; }
+  var h = '<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="label">LAST WEEK</span><span class="cz" style="font-weight:600;font-size:22px">' + rangeText(lw) + '</span></div>' +
+    '<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><span class="cz" style="font-weight:600;font-size:52px;line-height:1">' + a.minutes + '</span><span class="it muted">minutes earned' + (b.minutes || a.minutes ? ' · week before: ' + b.minutes : '') + '</span></div><div class="rule">' +
+    EXERCISES.map(function (e) { return '<div class="stat"><span>' + e.name + '</span><span>' + fmtQty(e.k, a.totals[e.k]) + diff(a.totals[e.k] || 0, b.totals[e.k] || 0, e.k) + '</span></div>'; }).join('') +
+    '<div class="stat"><span>Days trained</span><span>' + a.daysTrained + ' of 7' + diff(a.daysTrained, b.daysTrained) + '</span></div>' +
+    '<div class="stat"><span>Best day</span><span>' + (a.best ? parseKey(a.best.k).toLocaleDateString(undefined, { weekday: 'long' }) + ' · ' + a.best.m + ' min' : '—') + '</span></div></div>';
+  var older = Object.keys(S.weeks).sort().reverse().filter(function (k) { return k < lw; }).slice(0, 12);
+  if (older.length) h += '<span class="label">EARLIER WEEKS</span><div class="rule">' + older.map(function (k) { var w = S.weeks[k]; return '<div class="stat"><span>' + rangeText(k) + '</span><span>' + w.minutes + ' min · ' + w.daysTrained + ' days</span></div>'; }).join('') + '</div>';
+  $('w-body').innerHTML = h;
+}
+
+// ---------------- prayer language ----------------
+function applyLangButtons() {
+  document.querySelectorAll('[data-lang]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang())); });
+}
+function setLang(lg) {
+  if (lg === lang()) return;
+  var from = lang();
+  if (curSet) {
+    var was = rosaryPlaying, t = rTime();
+    if (rosaryPlaying) pauseRosary();
+    var r = rState(), np = mapPos(t, from, lg);
+    S.lang = lg;
+    r.pos = np;
+  } else S.lang = lg;
+  save(true); applyLangButtons(); loadRosary(); lastIdx = -1; renderAll();
+}
+document.addEventListener('click', function (ev) { var b = ev.target.closest('[data-lang]'); if (b && !b.disabled) setLang(b.getAttribute('data-lang')); });
+
+// ---------------- backup ----------------
+// on its own site (not inside Claude) progress lives only on the phone, so offer files too
+var HOSTED = !window.claude && !/claude/i.test(location.hostname);
+$('b-file').hidden = !HOSTED;
+$('b-open').hidden = !HOSTED;
+function bMsg(t, ok) { $('b-msg').className = 'msg ' + (ok ? 'ok' : 'no'); $('b-msg').textContent = t; }
+function backupText() { return JSON.stringify(S); }
+$('b-copy').addEventListener('click', function () {
+  var txt = backupText();
+  var done = function () { bMsg('Copied. Keep it in Notes or send it to yourself.', true); };
+  var fallback = function () { $('b-panel').hidden = false; $('b-text').value = txt; $('b-text').select(); bMsg('Select all and copy the text above.', false); };
+  try { navigator.clipboard.writeText(txt).then(done, fallback); } catch (e) { fallback(); }
+});
+$('b-file').addEventListener('click', function () {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([backupText()], { type: 'application/json' }));
+  a.download = 'scroll-backup-' + todayKey + '.json'; document.body.appendChild(a); a.click(); a.remove();
+  bMsg('Backup file saved.', true);
+});
+$('b-restore').addEventListener('click', function () { $('b-panel').hidden = false; $('b-text').value = ''; $('b-apply').textContent = 'RESTORE IT'; bMsg('', true); });
+$('b-cancel').addEventListener('click', function () { $('b-panel').hidden = true; bMsg('', true); });
+$('b-input').addEventListener('change', function () {
+  var f = this.files && this.files[0]; if (!f) return;
+  f.text().then(function (t) { $('b-text').value = t; bMsg('File loaded. Tap Restore it.', true); });
+});
+$('b-apply').addEventListener('click', function () {
+  var obj;
+  try { obj = JSON.parse($('b-text').value); } catch (e) { bMsg('That is not a Scroll backup.', false); return; }
+  if (!obj || typeof obj !== 'object' || !obj.days || !obj.levels) { bMsg('That is not a Scroll backup.', false); return; }
+  if ($('b-apply').textContent !== 'TAP AGAIN TO REPLACE') { $('b-apply').textContent = 'TAP AGAIN TO REPLACE'; bMsg('This replaces everything on this phone with the backup.', false); return; }
+  if (rosaryPlaying) pauseRosary();
+  S = merge(defaults(), obj); S.updated = Date.now(); save(true);
+  curSet = null; applyTheme(); applyLevels(); applyLangButtons(); applyRing(); loadRosary();
+  $('b-panel').hidden = true; bMsg('Restored.', true); renderSettings();
+});
+
+// ---------------- settings ----------------
+['music', 'voice', 'under'].forEach(function (k) {
+  var el = $('l-' + k);
+  el.addEventListener('input', function () { S.levels[k] = +el.value; $('v-' + k).textContent = el.value + '%'; applyLevels(); });
+  el.addEventListener('change', function () { save(); });
+});
+document.querySelectorAll('[data-theme-pick]').forEach(function (b) {
+  b.addEventListener('click', function () { S.theme = b.getAttribute('data-theme-pick'); applyTheme(); save(true); });
+});
+function renderSettings() { ['music', 'voice', 'under'].forEach(function (k) { $('l-' + k).value = S.levels[k]; $('v-' + k).textContent = S.levels[k] + '%'; }); }
+
+// ---------------- render ----------------
+function renderAll() {
+  if (dkey() !== todayKey) { todayKey = dkey(); }
+  loadRosary();
+  if (current === 'home') renderHome();
+  if (current === 'rosary') renderRosary(true);
+  if (current === 'training') renderTraining();
+  if (current === 'scripture') renderScripture();
+  if (current === 'settings') renderSettings();
+  if (current === 'bible') renderBible();
+  if (current === 'book') renderBook();
+  if (current === 'confession') renderConfession();
+  if (current === 'report') renderReport();
+}
+archiveWeeks();
+setInterval(function () { if (dkey() !== todayKey) { todayKey = dkey(); if (rosaryPlaying) pauseRosary(); curSet = null; renderAll(); } }, 60000);
+applyTheme(); applyLevels(true); applyLangButtons(); loadRosary(); applyRing();
+})();
+</script>
+</body>
+</html>

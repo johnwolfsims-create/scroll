@@ -1,0 +1,14 @@
+{
+  "name": "Scroll",
+  "short_name": "Scroll",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F0E0C",
+  "theme_color": "#0F0E0C",
+  "icons": [
+    { "src": "icons/icon-templar-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-templar-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
