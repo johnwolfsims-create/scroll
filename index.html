@@ -650,7 +650,8 @@ function ensureAudio() {
     ctx = new AC();
     mGain = ctx.createGain(); vGain = ctx.createGain();
     ctx.createMediaElementSource(music).connect(mGain).connect(ctx.destination);
-    ctx.createMediaElementSource(voice).connect(vGain).connect(ctx.destination);
+    // the rosary voice plays straight from its own audio element, not through the mixer,
+    // so it keeps praying with the screen locked or the app in the background
   } catch (e) { ctx = null; mGain = vGain = null; }
   applyLevels(true);
 }
@@ -662,18 +663,44 @@ function applyLevels(instant) {
     mGain.gain.cancelScheduledValues(now); vGain.gain.cancelScheduledValues(now);
     if (instant) { mGain.gain.value = mt; vGain.gain.value = vt; }
     else { mGain.gain.setTargetAtTime(mt, now, 0.6); vGain.gain.setTargetAtTime(vt, now, 0.2); }
+    try { voice.volume = vt; } catch (e) {}
   } else { try { music.volume = mt; voice.volume = vt; } catch (e) {} }
 }
 function playMusic(fromStart) {
   ensureAudio();
   try { if (fromStart) music.currentTime = 0; var p = music.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
 }
+// keep the screen on while Scroll is open
+var wakeLock = null;
+function holdAwake() {
+  try {
+    if (navigator.wakeLock && !wakeLock && document.visibilityState === 'visible') {
+      navigator.wakeLock.request('screen').then(function (w) { wakeLock = w; w.addEventListener('release', function () { wakeLock = null; }); }).catch(function () {});
+    }
+  } catch (e) {}
+}
+// lock-screen controls for the rosary
+function mediaSession() {
+  try {
+    if (!('mediaSession' in navigator)) return;
+    var names = { joyful: 'Joyful', luminous: 'Luminous', sorrowful: 'Sorrowful', glorious: 'Glorious' };
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: 'Rosarium · ' + (names[curSet] || '') + ' Mysteries', artist: 'Scroll', album: 'Anima',
+      artwork: [{ src: 'icons/icon-' + (S.theme || 'templar') + '-512.png', sizes: '512x512', type: 'image/png' }]
+    });
+    navigator.mediaSession.setActionHandler('play', function () { playRosary(); });
+    navigator.mediaSession.setActionHandler('pause', function () { pauseRosary(); });
+    ['seekbackward', 'seekforward', 'seekto', 'previoustrack', 'nexttrack'].forEach(function (a) { try { navigator.mediaSession.setActionHandler(a, null); } catch (e) {} });
+  } catch (e) {}
+}
 document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'visible') holdAwake();
   if (document.visibilityState === 'visible' && ctx && ctx.state === 'suspended') ctx.resume();
+  if (document.visibilityState === 'visible' && started && music.paused) playMusic(false);
   if (document.visibilityState === 'visible' && dkey() !== todayKey) { todayKey = dkey(); loadRosary(); renderAll(); }
 });
 // any tap revives music if the system paused it
-document.addEventListener('pointerdown', function () { if (started && music.paused) playMusic(false); }, true);
+document.addEventListener('pointerdown', function () { holdAwake(); if (started && music.paused) playMusic(false); }, true);
 
 // ---------------- navigation ----------------
 var current = 'startup', started = false, prevForSettings = 'home';
@@ -1192,6 +1219,8 @@ function playRosary() {
   var seek = function () { try { if (Math.abs(voice.currentTime - r.pos) > 1) voice.currentTime = r.pos; } catch (e) {} };
   if (voice.readyState >= 1) seek(); else voice.addEventListener('loadedmetadata', seek, { once: true });
   rosaryPlaying = true;
+  mediaSession();
+  try { navigator.mediaSession && (navigator.mediaSession.playbackState = 'playing'); } catch (e) {}
   // play() must run inside the tap itself, or iOS blocks it
   var p = voice.play();
   if (p && p.catch) p.catch(function () { rosaryPlaying = false; applyLevels(); renderRosaryControls(); });
@@ -1200,6 +1229,7 @@ function playRosary() {
 function pauseRosary() {
   try { voice.pause(); } catch (e) {}
   rosaryPlaying = false;
+  try { navigator.mediaSession && (navigator.mediaSession.playbackState = 'paused'); } catch (e) {}
   var r = rState(); r.pos = voice.currentTime || r.pos; save(true);
   applyLevels(); renderRosaryControls();
 }
