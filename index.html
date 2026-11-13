@@ -644,6 +644,7 @@ function applyTheme() {
 var music = $('music'), voice = $('voice');
 var ctx = null, mGain = null, vGain = null, rosaryPlaying = false;
 function ensureAudio() {
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
   if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
   try {
     var AC = window.AudioContext || window.webkitAudioContext;
